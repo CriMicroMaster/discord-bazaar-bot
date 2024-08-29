@@ -210,24 +210,27 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.commandName === "inventory") {
-    // Find or create the user's inventory
+    // Fetch the user's inventory
     const [inventory] = await Inventory.findOrCreate({
       where: { userId: userId },
     });
-  
-    const items = inventory.items;
-    let inventoryMessage = "💼 **Your Inventory** 💼\n";
-  
-    if (Object.keys(items).length === 0) {
-      inventoryMessage += "Your inventory is empty.";
-    } else {
-      for (const [itemName, amount] of Object.entries(items)) {
-        inventoryMessage += `**${itemName}**: ${amount}\n`;
-      }
+
+    // Check if the inventory is empty
+    if (Object.keys(inventory.items).length === 0) {
+      await interaction.reply({
+        content: "Your inventory is empty.",
+        ephemeral: true,
+      });
+      return;
     }
-  
+
+    // Build the inventory message
+    const itemsList = Object.entries(inventory.items)
+      .map(([itemName, amount]) => `${amount} ${itemName}`)
+      .join(", ");
+
     await interaction.reply({
-      content: inventoryMessage,
+      content: `Your inventory: ${itemsList}`,
       ephemeral: true,
     });
   }
