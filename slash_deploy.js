@@ -60,7 +60,13 @@ const slashRegister = async () => {
           .setDescription("Show the top users based on their gold balance"),
         new SlashCommandBuilder()
           .setName("blackjack")
-          .setDescription("Play a round of blackjack."),
+          .setDescription("Play a game of Blackjack")
+          .addIntegerOption((option) =>
+            option
+              .setName("amount")
+              .setDescription("The amount of gold to bet")
+              .setRequired(true)
+          ),
       ],
     });
 
