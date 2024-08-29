@@ -19,14 +19,7 @@ const client = new Client({
 async function addXP(userId, amount) {
   const [wallet] = await Wallet.findOrCreate({
     where: { userId: userId },
-    defaults: {
-      xp: 0, // Initialize XP to 0 if it doesn't exist
-      level: 1, // Initialize level to 1 if it doesn't exist
-    },
   });
-
-  if (wallet.xp === undefined) wallet.xp = 0;
-  if (wallet.level === undefined) wallet.level = 1;
   
   wallet.xp += amount;
 
@@ -355,14 +348,7 @@ client.on("interactionCreate", async (interaction) => {
     // Fetch user wallet
     const [wallet] = await Wallet.findOrCreate({
       where: { userId: userId },
-      defaults: {
-        xp: 0,  // Initialize XP to 0 if it doesn't exist
-        level: 1,  // Initialize level to 1 if it doesn't exist
-      },
     });
-
-    if (wallet.xp === undefined) wallet.xp = 0;
-    if (wallet.level === undefined) wallet.level = 1;
     
     // Create the embed
     const statsEmbed = new EmbedBuilder()
