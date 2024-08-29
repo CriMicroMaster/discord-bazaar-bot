@@ -65,6 +65,52 @@ client.on("interactionCreate", async (interaction) => {
     });
   }
 
+  if (interaction.commandName === "manage") {
+    const adminRoleId = 'YOUR_ADMIN_ROLE_ID'; // Replace with your admin role ID
+    const user = interaction.options.getUser("user");
+    const amount = interaction.options.getInteger("amount");
+    const subcommand = interaction.options.getSubcommand();
+  
+    // Check if the user has the admin role
+    if (!interaction.member.roles.cache.has(adminRoleId)) {
+      return await interaction.reply({
+        content: "You don't have permission to use this command.",
+        ephemeral: true,
+      });
+    }
+  
+    const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
+  
+    if (subcommand === "add") {
+      wallet.gold += amount;
+      await interaction.reply({
+        content: `Added ${amount} gold to ${user.username}.`,
+        ephemeral: true,
+      });
+    } else if (subcommand === "remove") {
+      if (wallet.gold >= amount) {
+        wallet.gold -= amount;
+        await interaction.reply({
+          content: `Removed ${amount} gold from ${user.username}.`,
+          ephemeral: true,
+        });
+      } else {
+        await interaction.reply({
+          content: `${user.username} doesn't have enough gold to remove that amount.`,
+          ephemeral: true,
+        });
+      }
+    } else if (subcommand === "reset") {
+      wallet.gold = 0;
+      await interaction.reply({
+        content: `${user.username}'s balance has been reset to 0.`,
+        ephemeral: true,
+      });
+    }
+  
+    await wallet.save();
+  }
+  
   if (interaction.commandName === "give") {
     const amount = interaction.options.getInteger("amount");
     const targetUser = interaction.options.getUser("user");
