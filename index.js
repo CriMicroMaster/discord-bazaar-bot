@@ -345,23 +345,28 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
   if (interaction.commandName === "stats") {
-    // Fetch user wallet
+    const targetUser = interaction.options.getUser('user') || interaction.user;
+    const userId = targetUser.id;
+
+    // Fetch or create wallet for the target user
     const [wallet] = await Wallet.findOrCreate({
       where: { userId: userId },
+      defaults: { level: 1, xp: 0, gold: 0 },
     });
-    
+
     // Create the embed
     const statsEmbed = new EmbedBuilder()
       .setColor(Colors.Blue)
-      .setTitle(`${interaction.user.username}'s Profile`)
+      .setTitle(`${targetUser.username}'s Profile`)
       .addFields(
-        { name: 'Level', value: `${wallet.level}`, inline: true },
-        { name: 'XP', value: `${wallet.xp}`, inline: true },
-        { name: 'Gold Balance', value: `${wallet.gold} gold`, inline: true }
+        { name: 'Level', value: `${wallet.level || 1}`, inline: true },
+        { name: 'XP', value: `${wallet.xp || 0}`, inline: true },
+        { name: 'Gold Balance', value: `${wallet.gold || 0} gold`, inline: true }
       )
       .setFooter({ text: `Requested by ${interaction.user.username}` })
       .setTimestamp();
-    
+
+    // Send the embed
     await interaction.reply({ embeds: [statsEmbed], ephemeral: true });
   }
 });
