@@ -429,13 +429,16 @@ client.on("interactionCreate", async (interaction) => {
     // Fetch user inventory
     const [inventory] = await Inventory.findOrCreate({ where: { userId } });
 
+    // Parse the stringified items into a JSON object
+    const items = JSON.parse(inventory.items || '{}');
+
     // Create the embed
     const statsEmbed = new EmbedBuilder()
       .setColor(Colors.Blue)
       .setTitle(`${interaction.user.username}'s Profile`)
       .addFields(
         { name: 'Gold Balance', value: `${wallet.gold} gold`, inline: true },
-        { name: 'Items', value: Object.entries(inventory.items)
+        { name: 'Items', value: Object.entries(items)
           .map(([item, quantity]) => `${item}: ${quantity}`)
           .join('\n') || 'No items', inline: true }
       )
