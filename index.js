@@ -78,6 +78,10 @@ const Inventory = sequelize.define("Inventory", {
     defaultValue: {}, 
     allowNull: false,
   },
+  lastWorkTime: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
 });
 
 // Synchronize the database
@@ -152,6 +156,8 @@ client.on("interactionCreate", async (interaction) => {
     await wallet.save();
   }
 
+  const COOLDOWN_MS = 1 * 60 * 1000;
+  
   if (interaction.commandName === "work") {
     const workType = interaction.options.getString("type");
   
@@ -165,11 +171,20 @@ client.on("interactionCreate", async (interaction) => {
     const [inventory] = await Inventory.findOrCreate({
       where: { userId: userId },
     });
+
+    const now = new Date();
+    const lastWorkTime = inventory.lastWorkTime ? new Date(inventory.lastWorkTime) : null;
   
+    if (lastWorkTime && (now - lastWorkTime) < COOLDOWN_MS) {
+      const remainingTime = Math.ceil((COOLDOWN_MS - (now - lastWorkTime)) / 1000); // in seconds
+      return await interaction.reply({
+        content: `Please wait ${remainingTime} more seconds before using the work command again.`,
+        ephemeral: true,
+      });
+    }
+    
     const rewards = workRewards[workType];
     let items = JSON.parse(inventory.items || '{}');
-  
-    // Determine the reward item based on probabilities
     const rewardItem = getRandomReward(rewards);
   
     // Add the item to the inventory
@@ -179,6 +194,7 @@ client.on("interactionCreate", async (interaction) => {
   
     // Convert the items object to a JSON string for storage
     inventory.items = JSON.stringify(items);
+    inventory.lastWorkTime = now;
     await inventory.save();
   
     console.log(`Updated inventory for user ${userId}:`, items); // Debug log
