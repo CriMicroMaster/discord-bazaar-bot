@@ -50,6 +50,20 @@ const slashRegister = async () => {
           .setName("leaderboard")
           .setDescription("Show the top users based on their gold balance"),
         new SlashCommandBuilder()
+          .setName("work")
+          .setDescription("Perform a work task to earn gold.")
+          .addStringOption((option) =>
+            option
+              .setName("task")
+              .setDescription("The type of work you want to perform.")
+              .setRequired(true)
+              .addChoices([
+                ["Mining", "mining"],
+                ["Farming", "farming"],
+                ["Fishing", "fishing"],
+              ]),
+          ),
+        new SlashCommandBuilder()
           .setName("manage")
           .setDescription("Administrative command to manage the economy")
           .addSubcommand(subcommand =>
