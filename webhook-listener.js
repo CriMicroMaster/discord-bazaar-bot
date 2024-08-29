@@ -11,7 +11,7 @@ const requestListener = (req, res) => {
     req.on('end', () => {
       const payload = JSON.parse(body);
       if (payload.ref === 'refs/heads/main') { // Check branch name
-        exec('cd home/nex/discord-bazaar-bot && git pull origin main && pm2 restart bot', (err, stdout, stderr) => {
+        exec('cd /home/nex/discord-bazaar-bot && git pull origin main && pm2 restart bot', (err, stdout, stderr) => {
           if (err) {
             console.error(`exec error: ${err}`);
             return;
