@@ -167,7 +167,7 @@ client.on("interactionCreate", async (interaction) => {
     });
   
     const rewards = workRewards[workType];
-    const items = inventory.items || {};
+    let items = JSON.parse(inventory.items || '{}');
   
     // Determine the reward item based on probabilities
     const rewardItem = getRandomReward(rewards);
@@ -177,10 +177,11 @@ client.on("interactionCreate", async (interaction) => {
       items[rewardItem] = (items[rewardItem] || 0) + 1;
     }
   
-    inventory.items = items;
+    // Convert the items object to a JSON string for storage
+    inventory.items = JSON.stringify(items);
     await inventory.save();
   
-    console.log(`Updated inventory for user ${userId}:`, inventory.items); // Debug log
+    console.log(`Updated inventory for user ${userId}:`, items); // Debug log
   
     await interaction.reply({
       content: `You went ${workType} and received: ${rewardItem}.`,
