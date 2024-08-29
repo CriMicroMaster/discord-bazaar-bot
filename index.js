@@ -55,6 +55,7 @@ const Inventory = sequelize.define("Inventory", {
   items: {
     type: DataTypes.JSONB, // Store items as a JSON object
     defaultValue: {},
+    allowNull: false,
   },
 });
 
