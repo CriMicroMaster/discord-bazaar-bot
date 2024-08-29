@@ -149,6 +149,7 @@ client.on("interactionCreate", async (interaction) => {
     const items = inventory.items || {};
 
     for (const [item, quantity] of Object.entries(items)) {
+      console.log(`Adding item ${item} with quantity ${quantity}`);
       inventory.items = {
         ...inventory.items,
         [item]: (inventory.items[item] || 0) + quantity,
