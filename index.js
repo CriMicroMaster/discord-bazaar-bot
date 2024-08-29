@@ -222,10 +222,10 @@ client.on("interactionCreate", async (interaction) => {
     // 50/50 chance
     const flipResult = Math.random() < 0.5;
 
+    const xpReward = 2;
+    const { leveledUp, level, xp } = await addXP(userId, xpReward);
+    
     if (flipResult) {
-      const xpReward = 2;
-      const { leveledUp, level, xp } = await addXP(userId, xpReward);
-      
       // User wins, double the amount (add the amount to the wallet)
       wallet.gold += amount;
       botWallet.gold -= amount;
