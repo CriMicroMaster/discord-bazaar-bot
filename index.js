@@ -31,6 +31,18 @@ const workRewards = {
   ],
 };
 
+const getRandomReward = (rewards) => {
+  const random = Math.random();
+  let cumulativeChance = 0;
+
+  for (const reward of rewards) {
+    cumulativeChance += reward.chance;
+    if (random < cumulativeChance) {
+      return reward.item;
+    }
+  }
+};
+
 // Initialize Sequelize with SQLite
 const sequelize = new Sequelize({
   dialect: "sqlite",
@@ -142,46 +154,37 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === "work") {
     const workType = interaction.options.getString("type");
-
+  
     if (!workRewards[workType]) {
-        return await interaction.reply({
-            content: "Invalid work type. Please choose from: mining, fishing, foraging.",
-            ephemeral: true,
-        });
-    }
-
-    const [inventory] = await Inventory.findOrCreate({
-        where: { userId: userId },
-    });
-
-    console.log('Fetched inventory:', inventory.items);
-
-    // Initialize items if not already initialized
-    let items = inventory.items || {};
-
-    // Loop through rewards and add to items
-    const rewards = workRewards[workType];
-    for (const [item, quantity] of Object.entries(rewards)) {
-        items[item] = (items[item] || 0) + quantity;
-    }
-
-    console.log('Items before saving:', items);
-
-    // Stringify items to manually ensure it's saved as JSON
-    inventory.items = JSON.stringify(items);
-
-    // Save the updated inventory back to the database
-    await inventory.save();
-
-    console.log('Updated inventory for user:', inventory.items); // Debug log
-
-    const rewardMessage = Object.entries(rewards)
-        .map(([itemName, amount]) => `${amount} ${itemName}`)
-        .join(", ");
-
-    await interaction.reply({
-        content: `You went ${workType} and received: ${rewardMessage}.`,
+      return await interaction.reply({
+        content: "Invalid work type. Please choose from: mining, fishing, foraging.",
         ephemeral: true,
+      });
+    }
+  
+    const [inventory] = await Inventory.findOrCreate({
+      where: { userId: userId },
+    });
+  
+    const rewards = workRewards[workType];
+    const items = inventory.items || {};
+  
+    // Determine the reward item based on probabilities
+    const rewardItem = getRandomReward(rewards);
+  
+    // Add the item to the inventory
+    if (rewardItem) {
+      items[rewardItem] = (items[rewardItem] || 0) + 1;
+    }
+  
+    inventory.items = items;
+    await inventory.save();
+  
+    console.log(`Updated inventory for user ${userId}:`, inventory.items); // Debug log
+  
+    await interaction.reply({
+      content: `You went ${workType} and received: ${rewardItem}.`,
+      ephemeral: true,
     });
   }
 
