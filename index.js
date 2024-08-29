@@ -155,6 +155,8 @@ client.on("interactionCreate", async (interaction) => {
     inventory.items = items;
     await inventory.save();
 
+    console.log(`Updated inventory for user ${userId}:`, inventory.items); // Debug log
+
     const rewardMessage = Object.entries(rewards)
       .map(([itemName, amount]) => `${amount} ${itemName}`)
       .join(", ");
