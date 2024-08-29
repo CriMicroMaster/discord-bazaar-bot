@@ -178,7 +178,7 @@ client.on("interactionCreate", async (interaction) => {
     if (lastWorkTime && (now - lastWorkTime) < COOLDOWN_MS) {
       const remainingTime = Math.ceil((COOLDOWN_MS - (now - lastWorkTime)) / 1000); // in seconds
       return await interaction.reply({
-        content: `Please wait ${remainingTime} more seconds before using the work command again.`,
+        content: `You're exhausted! You can work again in ${remainingTime} seconds.`,
         ephemeral: true,
       });
     }
