@@ -16,6 +16,28 @@ const client = new Client({
   ],
 });
 
+async function addXP(userId, amount) {
+  const [wallet] = await Wallet.findOrCreate({
+    where: { userId: userId },
+  });
+
+  wallet.xp += amount;
+
+  const levelUpThreshold = 100; // XP required to level up
+  let leveledUp = false;
+
+  // Check if user should level up
+  while (wallet.xp >= wallet.level * levelUpThreshold) {
+    wallet.xp -= wallet.level * levelUpThreshold;
+    wallet.level += 1;
+    leveledUp = true;
+  }
+
+  await wallet.save();
+
+  return { leveledUp, level: wallet.level, xp: wallet.xp };
+}
+
 const getRandomReward = (rewards) => {
   const random = Math.random();
   let cumulativeChance = 0;
@@ -44,6 +66,16 @@ const Wallet = sequelize.define("Wallet", {
   gold: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
+    allowNull: false,
+  },
+  xp: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+  },
+  level: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1,
     allowNull: false,
   },
   lastDailyReward: {
@@ -191,6 +223,9 @@ client.on("interactionCreate", async (interaction) => {
     const flipResult = Math.random() < 0.5;
 
     if (flipResult) {
+      const xpReward = 2;
+      const { leveledUp, level, xp } = await addXP(userId, xpReward);
+      
       // User wins, double the amount (add the amount to the wallet)
       wallet.gold += amount;
       botWallet.gold -= amount;
