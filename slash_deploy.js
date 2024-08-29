@@ -58,6 +58,9 @@ const slashRegister = async () => {
         new SlashCommandBuilder()
           .setName("leaderboard")
           .setDescription("Show the top users based on their gold balance"),
+        new SlashCommandBuilder()
+          .setName("blackjack")
+          .setDescription("Play a round of blackjack."),
       ],
     });
 
