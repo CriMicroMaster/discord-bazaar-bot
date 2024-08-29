@@ -147,10 +147,15 @@ client.on("interactionCreate", async (interaction) => {
 
     const rewards = workRewards[workType];
 
-    // Update the inventory with the new rewards
+    // Ensure items are being added correctly
     for (const [item, quantity] of Object.entries(rewards)) {
       inventory.items[item] = (inventory.items[item] || 0) + quantity;
     }
+
+    console.log(`Before saving, inventory items:`, inventory.items);
+
+    // Explicitly stringify the items before saving (if JSON isn't saving properly)
+    inventory.items = JSON.stringify(inventory.items);
 
     await inventory.save();
 
@@ -165,7 +170,7 @@ client.on("interactionCreate", async (interaction) => {
       ephemeral: true,
     });
   }
-  
+
   if (interaction.commandName === "give") {
     const amount = interaction.options.getInteger("amount");
     const targetUser = interaction.options.getUser("user");
