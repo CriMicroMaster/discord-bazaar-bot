@@ -17,9 +17,18 @@ const client = new Client({
 });
 
 const workRewards = {
-  mining: { 'Iron Ore': 1, 'Gold Ore': 1 },
-  fishing: { 'Fish': 2 },
-  foraging: { 'Wood': 3, 'Herbs': 1 },
+  mining: [
+    { item: 'Stone', chance: 0.50 }, // 50% chance
+    { item: 'Iron Ore', chance: 0.30 }, // 30% chance
+    { item: 'Gold Ore', chance: 0.20 } // 20% chance 
+  ],
+  fishing: [
+    { item: 'Fish', chance: 1.0 }
+  ],
+  foraging: [
+    { item: 'Wood', chance: 0.60 }, // 60% chance
+    { item: 'Herbs', chance: 0.40 } // 40% chance 
+  ],
 };
 
 // Initialize Sequelize with SQLite
