@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits, ActivityType } = require("discord.js");
 const { Sequelize, DataTypes } = require("sequelize");
 const keep_alive = require("./keep_alive.js");
+const slash_deploy = require("./slash_deploy.js")
 
 // Initialize the Discord client
 const client = new Client({
