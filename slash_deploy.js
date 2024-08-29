@@ -1,5 +1,7 @@
 const { REST, Routes, SlashCommandBuilder } = require("discord.js");
 
+require('dotenv').config();
+
 const botID = "1278315648493027378"; // Your bot's ID
 const serverID = "1278098250330537994"; // Your server's ID
 const botToken = process.env.token;
