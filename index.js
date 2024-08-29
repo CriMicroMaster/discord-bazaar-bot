@@ -471,12 +471,18 @@ client.on("ready", (c) => {
 
 setInterval(async () => {
   for (const [userId, joinTime] of voiceActivity.entries()) {
-    const [wallet] = await Wallet.findOrCreate({
-      where: { userId: userId },
-    });
-    wallet.gold += 2;
-    await wallet.save();
+    try {
+      const [wallet] = await Wallet.findOrCreate({
+        where: { userId: userId },
+        defaults: { gold: 0 } // Initialize with default values if needed
+      });
+
+      wallet.gold += 2;
+      await wallet.save();
+    } catch (error) {
+      console.error(`Error updating wallet for user ${userId}:`, error);
+    }
   }
-}, 60000); // Run every minute (60000 ms)
+}, 60000);
 
 client.login(process.env.token);
