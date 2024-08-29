@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, ActivityType } = require("discord.js");
+const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors } = require("discord.js");
 const { Sequelize, DataTypes, Op } = require("sequelize");
 const slash_deploy = require("./slash_deploy.js")
 const keep_alive = require("./keep_alive.js");
