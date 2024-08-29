@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits, ActivityType } = require("discord.js");
 const { Sequelize, DataTypes } = require("sequelize");
 const slash_deploy = require("./slash_deploy.js")
 const keep_alive = require("./keep_alive.js");
-
+ 
 require('dotenv').config();
 
 // Initialize the Discord client
