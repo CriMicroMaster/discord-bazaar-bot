@@ -19,6 +19,10 @@ const client = new Client({
 async function addXP(userId, amount) {
   const [wallet] = await Wallet.findOrCreate({
     where: { userId: userId },
+    defaults: {
+      xp: 0, // Initialize XP to 0 if it doesn't exist
+      level: 1, // Initialize level to 1 if it doesn't exist
+    },
   });
 
   wallet.xp += amount;
