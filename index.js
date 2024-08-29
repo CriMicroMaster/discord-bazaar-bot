@@ -40,6 +40,18 @@ const Wallet = sequelize.define("Wallet", {
   },
 });
 
+const Inventory = sequelize.define("Inventory", {
+  userId: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: false,
+  },
+  items: {
+    type: DataTypes.JSONB, // Store items as a JSON object
+    defaultValue: {},
+  },
+});
+
 // Synchronize the database
 sequelize.sync();
 const { Op } = require("sequelize");
@@ -157,6 +169,29 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
 
+  if (interaction.commandName === "inventory") {
+    // Find or create the user's inventory
+    const [inventory] = await Inventory.findOrCreate({
+      where: { userId: userId },
+    });
+  
+    const items = inventory.items;
+    let inventoryMessage = "💼 **Your Inventory** 💼\n";
+  
+    if (Object.keys(items).length === 0) {
+      inventoryMessage += "Your inventory is empty.";
+    } else {
+      for (const [itemName, amount] of Object.entries(items)) {
+        inventoryMessage += `**${itemName}**: ${amount}\n`;
+      }
+    }
+  
+    await interaction.reply({
+      content: inventoryMessage,
+      ephemeral: true,
+    });
+  }
+    
   if (interaction.commandName === "coinflip") {
     const amount = interaction.options.getInteger("amount");
     const botId = "1278315648493027378";
