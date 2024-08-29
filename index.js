@@ -133,41 +133,42 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === "work") {
     const workType = interaction.options.getString("type");
-
+    
     if (!workRewards[workType]) {
-      return await interaction.reply({
-        content: "Invalid work type. Please choose from: mining, fishing, foraging.",
-        ephemeral: true,
-      });
+        return await interaction.reply({
+            content: "Invalid work type. Please choose from: mining, fishing, foraging.",
+            ephemeral: true,
+        });
     }
-
+    
     const [inventory] = await Inventory.findOrCreate({
-      where: { userId: userId },
+        where: { userId: userId },
     });
 
+    // Ensure the items are parsed correctly as a JSON object
+    let items = inventory.items;
+
+    // Loop through rewards and add to items
     const rewards = workRewards[workType];
-
-    // Ensure items are being added correctly
     for (const [item, quantity] of Object.entries(rewards)) {
-      inventory.items[item] = (inventory.items[item] || 0) + quantity;
+        items[item] = (items[item] || 0) + quantity;
     }
+    
+    // Update the inventory with the new items
+    inventory.items = items;
 
-    console.log(`Before saving, inventory items:`, inventory.items);
-
-    // Explicitly stringify the items before saving (if JSON isn't saving properly)
-    inventory.items = JSON.stringify(inventory.items);
-
+    // Save the updated inventory back to the database
     await inventory.save();
 
     console.log(`Updated inventory for user ${userId}:`, inventory.items); // Debug log
 
     const rewardMessage = Object.entries(rewards)
-      .map(([itemName, amount]) => `${amount} ${itemName}`)
-      .join(", ");
-
+        .map(([itemName, amount]) => `${amount} ${itemName}`)
+        .join(", ");
+    
     await interaction.reply({
-      content: `You went ${workType} and received: ${rewardMessage}.`,
-      ephemeral: true,
+        content: `You went ${workType} and received: ${rewardMessage}.`,
+        ephemeral: true,
     });
   }
 
