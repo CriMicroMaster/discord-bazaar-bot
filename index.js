@@ -16,21 +16,6 @@ const client = new Client({
   ],
 });
 
-const workRewards = {
-  mining: [
-    { item: 'Stone', chance: 0.50 }, // 50% chance
-    { item: 'Iron Ore', chance: 0.30 }, // 30% chance
-    { item: 'Gold Ore', chance: 0.20 } // 20% chance 
-  ],
-  fishing: [
-    { item: 'Fish', chance: 1.0 }
-  ],
-  foraging: [
-    { item: 'Wood', chance: 0.60 }, // 60% chance
-    { item: 'Herbs', chance: 0.40 } // 40% chance 
-  ],
-};
-
 const getRandomReward = (rewards) => {
   const random = Math.random();
   let cumulativeChance = 0;
@@ -62,23 +47,6 @@ const Wallet = sequelize.define("Wallet", {
     allowNull: false,
   },
   lastDailyReward: {
-    type: DataTypes.DATE,
-    allowNull: true,
-  },
-});
-
-const Inventory = sequelize.define("Inventory", {
-  userId: {
-    type: DataTypes.STRING,
-    unique: true,
-    allowNull: false,
-  },
-  items: {
-    type: DataTypes.JSON,
-    defaultValue: {}, 
-    allowNull: false,
-  },
-  lastWorkTime: {
     type: DataTypes.DATE,
     allowNull: true,
   },
@@ -156,56 +124,6 @@ client.on("interactionCreate", async (interaction) => {
     await wallet.save();
   }
 
-  const COOLDOWN_MS = 1 * 60 * 1000;
-  
-  if (interaction.commandName === "work") {
-    const workType = interaction.options.getString("type");
-  
-    if (!workRewards[workType]) {
-      return await interaction.reply({
-        content: "Invalid work type. Please choose from: mining, fishing, foraging.",
-        ephemeral: true,
-      });
-    }
-  
-    const [inventory] = await Inventory.findOrCreate({
-      where: { userId: userId },
-      defaults: { items: '{}', lastWorkTime: null },
-    });
-
-    const now = new Date();
-    const lastWorkTime = inventory.lastWorkTime ? new Date(inventory.lastWorkTime) : null;
-  
-    if (lastWorkTime && (now - lastWorkTime) < COOLDOWN_MS) {
-      const remainingTime = Math.ceil((COOLDOWN_MS - (now - lastWorkTime)) / 1000); // in seconds
-      return await interaction.reply({
-        content: `You're exhausted! You can work again in ${remainingTime} seconds.`,
-        ephemeral: true,
-      });
-    }
-    
-    const rewards = workRewards[workType];
-    let items = JSON.parse(inventory.items || '{}');
-    const rewardItem = getRandomReward(rewards);
-  
-    // Add the item to the inventory
-    if (rewardItem) {
-      items[rewardItem] = (items[rewardItem] || 0) + 1;
-    }
-  
-    // Convert the items object to a JSON string for storage
-    inventory.items = JSON.stringify(items);
-    inventory.lastWorkTime = now;
-    await inventory.save();
-  
-    console.log(`Updated inventory for user ${userId}:`, items); // Debug log
-  
-    await interaction.reply({
-      content: `You went ${workType} and received: ${rewardItem}.`,
-      ephemeral: true,
-    });
-  }
-
   if (interaction.commandName === "give") {
     const amount = interaction.options.getInteger("amount");
     const targetUser = interaction.options.getUser("user");
@@ -248,37 +166,6 @@ client.on("interactionCreate", async (interaction) => {
         ephemeral: true,
       });
     }
-  }
-
-  if (interaction.commandName === "inventory") {
-    // Find the user's inventory
-    const [inventory] = await Inventory.findOrCreate({
-        where: { userId: userId },
-    });
-
-    // Parse the stored JSON string if it's not already an object
-    let items = typeof inventory.items === "string" ? JSON.parse(inventory.items) : inventory.items;
-
-    console.log('Fetched inventory for display:', items); // Debug log
-
-    // Check if the inventory is empty
-    if (Object.keys(items).length === 0) {
-        await interaction.reply({
-            content: "Your inventory is empty.",
-            ephemeral: true,
-        });
-        return;
-    }
-
-    // Format the inventory items into a readable message
-    const inventoryMessage = Object.entries(items)
-        .map(([itemName, quantity]) => `${itemName}: ${quantity}`)
-        .join("\n");
-
-    await interaction.reply({
-        content: `Your inventory:\n${inventoryMessage}`,
-        ephemeral: true,
-    });
   }
     
   if (interaction.commandName === "coinflip") {
@@ -426,21 +313,12 @@ client.on("interactionCreate", async (interaction) => {
     // Fetch user wallet
     const [wallet] = await Wallet.findOrCreate({ where: { userId } });
 
-    // Fetch user inventory
-    const [inventory] = await Inventory.findOrCreate({ where: { userId } });
-
-    // Parse the stringified items into a JSON object
-    const items = JSON.parse(inventory.items || '{}');
-
     // Create the embed
     const statsEmbed = new EmbedBuilder()
       .setColor(Colors.Blue)
       .setTitle(`${interaction.user.username}'s Profile`)
       .addFields(
         { name: 'Gold Balance', value: `${wallet.gold} gold`, inline: true },
-        { name: 'Items', value: Object.entries(items)
-          .map(([item, quantity]) => `${item}: ${quantity}`)
-          .join('\n') || 'No items', inline: true }
       )
       .setFooter({ text: `Requested by ${interaction.user.username}` })
       .setTimestamp();
