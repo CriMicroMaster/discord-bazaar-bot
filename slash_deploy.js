@@ -11,15 +11,6 @@ const slashRegister = async () => {
     await rest.put(Routes.applicationGuildCommands(botID, serverID), {
       body: [
         new SlashCommandBuilder()
-          .setName("ping")
-          .setDescription("Test Command")
-          .addStringOption((option) => {
-            return option
-              .setName("text")
-              .setDescription("Some text about something")
-              .setRequired(true);
-          }),
-        new SlashCommandBuilder()
           .setName("balance")
           .setDescription("Check your wallet balance or another user's balance")
           .addUserOption((option) =>
