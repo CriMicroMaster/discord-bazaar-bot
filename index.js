@@ -45,6 +45,43 @@ const { Op } = require("sequelize");
 const logChannelId = "1278356566999044169"; // Channel ID for logging
 const TRAVELING_MERCHANT_ROLE_ID = "1278408050478157854";
 
+async function getPlayerAction(interaction, playerHand) {
+  // Send a message asking the player to choose "hit" or "stand"
+  const actionMessage = await interaction.followUp({
+    content: `Your hand: ${playerHand.join(", ")}\nWould you like to **hit** or **stand**?`,
+    ephemeral: true,
+    fetchReply: true,
+  });
+
+  // React to the message with "hit" and "stand" options
+  await actionMessage.react("👊"); // Represents "hit"
+  await actionMessage.react("✋"); // Represents "stand"
+
+  // Create a reaction collector to get the player's choice
+  const filter = (reaction, user) => {
+    return (
+      ["👊", "✋"].includes(reaction.emoji.name) &&
+      user.id === interaction.user.id
+    );
+  };
+
+  const collected = await actionMessage.awaitReactions({
+    filter,
+    max: 1,
+    time: 30000, // 30 seconds to respond
+    errors: ["time"],
+  });
+
+  const reaction = collected.first();
+
+  // Determine action based on the reaction emoji
+  if (reaction.emoji.name === "👊") {
+    return "hit";
+  } else {
+    return "stand";
+  }
+}
+
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
