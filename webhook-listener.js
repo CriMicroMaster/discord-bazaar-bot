@@ -13,7 +13,7 @@ app.post('/webhook', (req, res) => {
     // Ensure the request is from GitHub and has the correct event type
     if (payload && payload.ref === 'refs/heads/main') {
         // Reset local changes and pull the latest changes
-        exec('cd /home/nex/discord-bazaar-bot && git reset --hard HEAD && git clean -fd && git pull origin main && pm2 restart discord-bot', (err, stdout, stderr) => {
+        exec('cd /home/nex/discord-bazaar-bot && git reset --hard HEAD && git clean -fd && git pull origin main && pm2 restart bot', (err, stdout, stderr) => {
             if (err) {
                 console.error('Error executing git commands or PM2 restart:', err);
                 console.error(stderr);
