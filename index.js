@@ -66,7 +66,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.commandName === "manage") {
-    const adminRoleId = '1278099156900122665'; // Replace with your admin role ID
+    const adminRoleId = '1278099156900122666'; // Replace with your admin role ID
     const user = interaction.options.getUser("user");
     const amount = interaction.options.getInteger("amount");
     const subcommand = interaction.options.getSubcommand();
