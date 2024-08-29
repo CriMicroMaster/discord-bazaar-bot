@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, ActivityType } = require("discord.js");
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize, DataTypes, Op } = require("sequelize");
 const slash_deploy = require("./slash_deploy.js")
 const keep_alive = require("./keep_alive.js");
 
@@ -61,7 +61,6 @@ const Inventory = sequelize.define("Inventory", {
 
 // Synchronize the database
 sequelize.sync();
-const { Op } = require("sequelize");
 
 const logChannelId = "1278356566999044169"; // Channel ID for logging
 const TRAVELING_MERCHANT_ROLE_ID = "1278408050478157854";
