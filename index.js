@@ -25,6 +25,9 @@ async function addXP(userId, amount) {
     },
   });
 
+  if (wallet.xp === undefined) wallet.xp = 0;
+  if (wallet.level === undefined) wallet.level = 1;
+  
   wallet.xp += amount;
 
   const levelUpThreshold = 100; // XP required to level up
@@ -358,6 +361,9 @@ client.on("interactionCreate", async (interaction) => {
       },
     });
 
+    if (wallet.xp === undefined) wallet.xp = 0;
+    if (wallet.level === undefined) wallet.level = 1;
+    
     // Create the embed
     const statsEmbed = new EmbedBuilder()
       .setColor(Colors.Blue)
