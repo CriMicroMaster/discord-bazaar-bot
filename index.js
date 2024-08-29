@@ -133,35 +133,37 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === "work") {
     const workType = interaction.options.getString("type");
-
+  
     if (!workRewards[workType]) {
       return await interaction.reply({
         content: "Invalid work type. Please choose from: mining, fishing, foraging.",
         ephemeral: true,
       });
     }
-
+  
     const [inventory] = await Inventory.findOrCreate({
       where: { userId: userId },
     });
-
+  
     const rewards = workRewards[workType];
     const items = inventory.items || {};
-
+  
+    // Update the inventory with the rewards
     for (const [item, quantity] of Object.entries(rewards)) {
       console.log(`Adding item ${item} with quantity ${quantity}`);
       items[item] = (items[item] || 0) + quantity;
     }
-    
+  
+    // Save the updated items back to the inventory
     inventory.items = items;
     await inventory.save();
-
+  
     console.log(`Updated inventory for user ${userId}:`, inventory.items); // Debug log
-
+  
     const rewardMessage = Object.entries(rewards)
       .map(([itemName, amount]) => `${amount} ${itemName}`)
       .join(", ");
-
+  
     await interaction.reply({
       content: `You went ${workType} and received: ${rewardMessage}.`,
       ephemeral: true,
