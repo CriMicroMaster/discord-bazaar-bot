@@ -378,7 +378,7 @@ client.on("interactionCreate", async (interaction) => {
       // Find or create the user's wallet
       const [wallet] = await Wallet.findOrCreate({
         where: { userId: userId },
-        defaults: { gold: 100, lastDailyReward: null },
+        defaults: { gold: 0, lastDailyReward: null },
       });
 
       const now = new Date();
