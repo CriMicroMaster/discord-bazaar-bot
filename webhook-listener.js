@@ -1,35 +1,34 @@
-const http = require('http');
 const { exec } = require('child_process');
+const express = require('express');
+const bodyParser = require('body-parser');
 
-const hostname = '0.0.0.0';
-const port = 3000; // Change as needed
+// Initialize the Express app
+const app = express();
+app.use(bodyParser.json());
 
-const requestListener = (req, res) => {
-  if (req.method === 'POST' && req.url === '/webhook') {
-    let body = '';
-    req.on('data', chunk => body += chunk.toString());
-    req.on('end', () => {
-      const payload = JSON.parse(body);
-      if (payload.ref === 'refs/heads/main') { // Check branch name
-        exec('cd /home/nex/discord-bazaar-bot && git pull origin main && pm2 restart bot', (err, stdout, stderr) => {
-          if (err) {
-            console.error(`exec error: ${err}`);
-            return;
-          }
-          console.log(`stdout: ${stdout}`);
-          console.error(`stderr: ${stderr}`);
+// Define your GitHub webhook endpoint
+app.post('/webhook', (req, res) => {
+    const payload = req.body;
+
+    // Ensure the request is from GitHub and has the correct event type
+    if (payload && payload.ref === 'refs/heads/main') {
+        // Reset local changes and pull the latest changes
+        exec('cd /home/nex/discord-bazaar-bot && git reset --hard HEAD && git clean -fd && git pull origin main && pm2 restart discord-bot', (err, stdout, stderr) => {
+            if (err) {
+                console.error('Error executing git commands or PM2 restart:', err);
+                console.error(stderr);
+                return res.status(500).send('Error executing git commands or PM2 restart');
+            }
+
+            console.log('Git pull and PM2 restart successful.');
+            res.send('Deployment successful');
         });
-      }
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end('Webhook received');
-    });
-  } else {
-    res.writeHead(404);
-    res.end();
-  }
-};
+    } else {
+        res.status(400).send('Invalid payload');
+    }
+});
 
-const server = http.createServer(requestListener);
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+// Start the Express server
+app.listen(3000, () => {
+    console.log('Webhook listener is running on port 3000');
 });
