@@ -148,11 +148,13 @@ client.on("interactionCreate", async (interaction) => {
     const rewards = workRewards[workType];
     const items = inventory.items || {};
 
-    for (const [itemName, amount] of Object.entries(rewards)) {
-      items[itemName] = (items[itemName] || 0) + amount;
+    for (const [item, quantity] of Object.entries(items)) {
+      inventory.items = {
+        ...inventory.items,
+        [item]: (inventory.items[item] || 0) + quantity,
+      };
     }
-
-    inventory.items = items;
+    
     await inventory.save();
 
     console.log(`Updated inventory for user ${userId}:`, inventory.items); // Debug log
