@@ -106,6 +106,9 @@ const slashRegister = async () => {
                   .setName("user")
                   .setDescription("The user to reset")
                   .setRequired(true))),
+        new SlashCommandBuilder()
+          .setName("stats")
+          .setDescription("Shows your stats."),
       ],
     });
 
