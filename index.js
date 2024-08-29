@@ -423,27 +423,26 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
   if (interaction.commandName === "stats") {
-    try {
-      // Fetch user's wallet and inventory
-      const [wallet] = await Wallet.findOrCreate({ where: { userId: userId } });
-      const [inventory] = await Inventory.findOrCreate({ where: { userId: userId } });
+    // Fetch user wallet
+    const [wallet] = await Wallet.findOrCreate({ where: { userId } });
 
-      // Build the embed
-      const embed = new EmbedBuilder()
-        .setTitle(`${interaction.user.username}'s Profile`)
-        .setColor(Colors.BLUE)
-        .addFields(
-          { name: 'Balance', value: `${wallet.gold} gold`, inline: true },
-          { name: 'Last Daily Reward', value: wallet.lastDailyReward ? wallet.lastDailyReward.toDateString() : 'Not claimed yet', inline: true },
-          { name: 'Inventory', value: formatInventory(inventory.items) || 'Empty', inline: false }
-        )
-        .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
+    // Fetch user inventory
+    const [inventory] = await Inventory.findOrCreate({ where: { userId } });
 
-      await interaction.reply({ embeds: [embed], ephemeral: true });
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-      await interaction.reply({ content: "There was an error fetching your stats. Please try again later.", ephemeral: true });
-    }
+    // Create the embed
+    const statsEmbed = new EmbedBuilder()
+      .setColor(Colors.Blue)
+      .setTitle(`${interaction.user.username}'s Profile`)
+      .addFields(
+        { name: 'Gold Balance', value: `${wallet.gold} gold`, inline: true },
+        { name: 'Items', value: Object.entries(inventory.items)
+          .map(([item, quantity]) => `${item}: ${quantity}`)
+          .join('\n') || 'No items', inline: true }
+      )
+      .setFooter({ text: `Requested by ${interaction.user.username}` })
+      .setTimestamp();
+
+    await interaction.reply({ embeds: [statsEmbed], ephemeral: true });
   }
 });
 
