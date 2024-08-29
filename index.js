@@ -389,7 +389,7 @@ client.on("ready", (c) => {
   const updateActivity = () => {
     const currentHour = new Date().getHours();
 
-    if (currentHour >= 21 || currentHour < 5) {
+    if (currentHour >= 23 || currentHour < 7) {
       // Between 23:00 and 07:00
       client.user.setActivity({
         name: "The Entrance Gates",
