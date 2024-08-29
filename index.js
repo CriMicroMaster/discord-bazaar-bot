@@ -353,11 +353,13 @@ client.on("interactionCreate", async (interaction) => {
       .setColor(Colors.Blue)
       .setTitle(`${interaction.user.username}'s Profile`)
       .addFields(
-        { name: 'Gold Balance', value: `${wallet.gold} gold`, inline: true },
+        { name: 'Level', value: `${wallet.level}`, inline: true },
+        { name: 'XP', value: `${wallet.xp}`, inline: true },
+        { name: 'Gold Balance', value: `${wallet.gold} gold`, inline: true }
       )
       .setFooter({ text: `Requested by ${interaction.user.username}` })
       .setTimestamp();
-
+    
     await interaction.reply({ embeds: [statsEmbed], ephemeral: true });
   }
 });
