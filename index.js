@@ -149,7 +149,7 @@ client.on("interactionCreate", async (interaction) => {
   
     // Update the inventory with work rewards
     const rewards = workRewards[workType];
-    const items = inventory.items;
+    const items = inventory.items || {}; // Initialize items if undefined
   
     for (const [itemName, amount] of Object.entries(rewards)) {
       items[itemName] = (items[itemName] || 0) + amount;
