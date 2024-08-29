@@ -2,7 +2,7 @@ const http = require('http');
 const { exec } = require('child_process');
 
 const hostname = '0.0.0.0';
-const port = 8080; // Change as needed
+const port = 3000; // Change as needed
 
 const requestListener = (req, res) => {
   if (req.method === 'POST' && req.url === '/webhook') {
@@ -11,7 +11,7 @@ const requestListener = (req, res) => {
     req.on('end', () => {
       const payload = JSON.parse(body);
       if (payload.ref === 'refs/heads/main') { // Check branch name
-        exec('cd /path/to/your/bot && git pull origin main && pm2 restart bot', (err, stdout, stderr) => {
+        exec('cd home/nex/discord-bazaar-bot && git pull origin main && pm2 restart bot', (err, stdout, stderr) => {
           if (err) {
             console.error(`exec error: ${err}`);
             return;
