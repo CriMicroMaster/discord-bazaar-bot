@@ -170,6 +170,7 @@ client.on("interactionCreate", async (interaction) => {
   
     const [inventory] = await Inventory.findOrCreate({
       where: { userId: userId },
+      defaults: { items: '{}', lastWorkTime: null },
     });
 
     const now = new Date();
