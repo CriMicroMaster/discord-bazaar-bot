@@ -16,6 +16,12 @@ const client = new Client({
   ],
 });
 
+const workRewards = {
+  mining: { 'Iron Ore': 1, 'Gold Ore': 1 },
+  fishing: { 'Fish': 2 },
+  foraging: { 'Wood': 3, 'Herbs': 1 },
+};
+
 // Initialize Sequelize with SQLite
 const sequelize = new Sequelize({
   dialect: "sqlite",
@@ -123,6 +129,44 @@ client.on("interactionCreate", async (interaction) => {
     }
   
     await wallet.save();
+  }
+
+  if (interaction.commandName === "work") {
+    const workType = interaction.options.getString("type");
+  
+    // Validate the work type
+    if (!workRewards[workType]) {
+      return await interaction.reply({
+        content: "Invalid work type. Please choose from: mining, fishing, foraging.",
+        ephemeral: true,
+      });
+    }
+  
+    // Find or create the user's inventory
+    const [inventory] = await Inventory.findOrCreate({
+      where: { userId: userId },
+    });
+  
+    // Update the inventory with work rewards
+    const rewards = workRewards[workType];
+    const items = inventory.items;
+  
+    for (const [itemName, amount] of Object.entries(rewards)) {
+      items[itemName] = (items[itemName] || 0) + amount;
+    }
+    
+    inventory.items = items;
+    await inventory.save();
+  
+    // Respond to the user
+    const rewardMessage = Object.entries(rewards)
+      .map(([itemName, amount]) => `${amount} ${itemName}`)
+      .join(", ");
+  
+    await interaction.reply({
+      content: `You went ${workType} and received: ${rewardMessage}.`,
+      ephemeral: true,
+    });
   }
   
   if (interaction.commandName === "give") {
