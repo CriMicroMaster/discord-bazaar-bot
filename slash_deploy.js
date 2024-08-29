@@ -49,6 +49,46 @@ const slashRegister = async () => {
         new SlashCommandBuilder()
           .setName("leaderboard")
           .setDescription("Show the top users based on their gold balance"),
+        new SlashCommandBuilder()
+          .setName("manage")
+          .setDescription("Administrative command to manage the economy")
+          .addSubcommand(subcommand =>
+            subcommand
+              .setName("add")
+              .setDescription("Add gold to a user's balance")
+              .addUserOption(option =>
+                option
+                  .setName("user")
+                  .setDescription("The user to add gold to")
+                  .setRequired(true))
+              .addIntegerOption(option =>
+                option
+                  .setName("amount")
+                  .setDescription("The amount of gold to add")
+                  .setRequired(true)))
+          .addSubcommand(subcommand =>
+            subcommand
+              .setName("remove")
+              .setDescription("Remove gold from a user's balance")
+              .addUserOption(option =>
+                option
+                  .setName("user")
+                  .setDescription("The user to remove gold from")
+                  .setRequired(true))
+              .addIntegerOption(option =>
+                option
+                  .setName("amount")
+                  .setDescription("The amount of gold to remove")
+                  .setRequired(true)))
+          .addSubcommand(subcommand =>
+            subcommand
+              .setName("reset")
+              .setDescription("Reset a user's balance to 0")
+              .addUserOption(option =>
+                option
+                  .setName("user")
+                  .setDescription("The user to reset")
+                  .setRequired(true))),
       ],
     });
 
