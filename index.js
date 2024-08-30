@@ -313,6 +313,10 @@ client.on("interactionCreate", async (interaction) => {
         // Update last daily reward date
         wallet.gold += 50; // Reward amount
         wallet.lastDailyReward = now;
+
+        const xpReward = 5;
+        const { leveledUp, level, xp } = await addXP(userId, xpReward);
+        
         await wallet.save();
 
         await interaction.reply({
