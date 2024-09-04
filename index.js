@@ -484,6 +484,11 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
       }
     }
 
+    if (newState.channelId !== afkChannelId) {
+      voiceActivity.set(userId, Date.now());
+      console.log("User VoiceActivity updated!")
+    }
+    
     // Check if the user left a temporary channel
     if (tempChannels.has(oldState.channelId)) {
       const tempChannel = tempChannels.get(oldState.channelId);
