@@ -398,7 +398,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
       // Create a new temporary voice channel in the same category
       const tempChannel = await guild.channels.create({
-        name: `🎤Temp ${tempChannelCount}`, // Customize the channel name as needed
+        name: `🍺Table ${tempChannelCount}`, // Customize the channel name as needed
         type: 2, // 2 indicates a voice channel
         parent: category, // Set the same category as the original channel
         permissionOverwrites: [
