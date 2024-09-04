@@ -431,6 +431,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     // Update voice activity
     if (newState.channelId !== afkChannelId) {
       voiceActivity.set(userId, Date.now());
+      console.log("User VoiceActivity updated!")
     }
   }
 
