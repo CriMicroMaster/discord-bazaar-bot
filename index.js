@@ -388,9 +388,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
   // User joins a voice channel
   if (!oldState.channelId && newState.channelId) {
-    // Check if the user joined the specific voice channel
     if (newState.channelId === targetChannelId) {
-      const guild = newState.guild;
       const member = newState.member;
 
       try {
@@ -421,6 +419,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
           if (tempChannel.members.size === 0) {
             tempChannel.delete().catch(console.error); // Handle any errors during deletion
             clearInterval(interval);
+            tempChannels.delete(tempChannel.id);
             tempChannelCount = Math.max(1, tempChannelCount - 1); // Ensure tempChannelCount does not go below 1
           }
         }, 60000); // Check every minute
@@ -433,12 +432,13 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
       voiceActivity.set(userId, Date.now());
     }
   }
-  // User leaves a voice channel
-  if (oldState.channelId && !newState.channelId) {
-    // If the user leaves a temporary channel, check if it's now empty
-    const tempChannel = tempChannels.get(oldState.channelId);
-    if (tempChannel) {
-      if (tempChannel.members.size === 0) {
+  
+  // User switches channels
+  if (oldState.channelId && newState.channelId) {
+    // Check if the old channel is a temporary channel
+    if (tempChannels.has(oldState.channelId)) {
+      const tempChannel = tempChannels.get(oldState.channelId);
+      if (tempChannel && tempChannel.members.size === 0) {
         try {
           await tempChannel.delete(); // Delete the channel immediately
           tempChannels.delete(tempChannel.id); // Remove from the map
@@ -448,7 +448,10 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         }
       }
     }
-    
+  }
+
+  // User leaves a voice channel
+  if (oldState.channelId && !newState.channelId) {
     voiceActivity.delete(userId); // Remove the user from the map
   }
 });
