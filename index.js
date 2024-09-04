@@ -378,7 +378,6 @@ client.on("interactionCreate", async (interaction) => {
 const voiceActivity = new Map();
 
 let tempChannelCount = 1;
-const activeTempChannels = new Set();
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
   const userId = newState.id;
@@ -414,7 +413,6 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         ],
       });
       
-      activeTempChannels.add(tempChannel.id); // Add the new channel to the active set
       tempChannelCount++; // Increment the counter for the next temporary channel
       // Move the user to the new channel
       await member.voice.setChannel(tempChannel);
@@ -423,8 +421,8 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
       const interval = setInterval(() => {
         if (tempChannel.members.size === 0) {
           tempChannel.delete();
-          activeTempChannels.delete(tempChannel.id);
           clearInterval(interval);
+          tempChannelCount = Math.max(1, tempChannelCount - 1);
         }
       }, 60000); // Check every minute
     }
@@ -433,13 +431,6 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   // User leaves a voice channel
   if (oldState.channelId && !newState.channelId) {
     voiceActivity.delete(userId); // Remove the user from the map
-  }
-});
-
-client.on('channelDelete', (channel) => {
-  if (activeTempChannels.has(channel.id)) {
-    activeTempChannels.delete(channel.id); // Remove from active set
-    tempChannelCount = Math.max(1, tempChannelCount - 1); // Decrement the counter, ensuring it doesn't go below 1
   }
 });
 
