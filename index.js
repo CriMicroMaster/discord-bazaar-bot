@@ -415,14 +415,6 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         // Move the user to the new channel
         await member.voice.setChannel(tempChannel);
   
-        // Optional: Delete the channel when it becomes empty
-        const interval = setInterval(() => {
-          if (tempChannel.members.size === 0) {
-            tempChannel.delete();
-            clearInterval(interval);
-            tempChannelCount = Math.max(1, tempChannelCount - 1);
-          }
-        }, 60000); // Check every minute
       } catch (error) {
         console.error(`Error handling voice channel creation or user movement: ${error}`);
       }
@@ -434,6 +426,20 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   }
   // User leaves a voice channel
   if (oldState.channelId && !newState.channelId) {
+    // If the user leaves a temporary channel, check if it's now empty
+    const tempChannel = tempChannels.get(oldState.channelId);
+    if (tempChannel) {
+      if (tempChannel.members.size === 0) {
+        try {
+          await tempChannel.delete(); // Delete the channel immediately
+          tempChannels.delete(tempChannel.id); // Remove from the map
+          tempChannelCount = Math.max(1, tempChannelCount - 1); // Ensure tempChannelCount does not go below 1
+        } catch (error) {
+          console.error(`Error deleting voice channel: ${error}`);
+        }
+      }
+    }
+    
     voiceActivity.delete(userId); // Remove the user from the map
   }
 });
