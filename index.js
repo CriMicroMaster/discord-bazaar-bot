@@ -5,6 +5,8 @@ const keep_alive = require("./keep_alive.js");
 
 require('dotenv').config();
 
+const afkChannelId = "1278277819633504307";
+
 // Initialize the Discord client
 const client = new Client({
   intents: [
@@ -385,45 +387,51 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
   // User joins a voice channel
   if (!oldState.channelId && newState.channelId) {
-    voiceActivity.set(userId, Date.now());
-
     // Check if the user joined the specific voice channel
     if (newState.channelId === targetChannelId) {
       const guild = newState.guild;
       const member = newState.member;
 
-      // Get the category of the original voice channel
-      const originalChannel = guild.channels.cache.get(targetChannelId);
-      const category = originalChannel.parent;
-
-      // Create a new temporary voice channel in the same category
-      const tempChannel = await guild.channels.create({
-        name: `🍺Table ${tempChannelCount}`, // Customize the channel name as needed
-        type: 2, // 2 indicates a voice channel
-        parent: category, // Set the same category as the original channel
-        permissionOverwrites: [
-          {
-            id: member.user.id,
-            allow: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ManageChannels], // Give the user permissions to connect and manage the channel
-          },
-        ],
-      });
+      try {
+        // Get the category of the original voice channel
+        const originalChannel = guild.channels.cache.get(targetChannelId);
+        if (!originalChannel) return;
+        const category = originalChannel.parent;
+  
+        // Create a new temporary voice channel in the same category
+        const tempChannel = await guild.channels.create({
+          name: `🍺Table ${tempChannelCount}`, // Customize the channel name as needed
+          type: 2, // 2 indicates a voice channel
+          parent: category, // Set the same category as the original channel
+          permissionOverwrites: [
+            {
+              id: member.user.id,
+              allow: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ManageChannels], // Give the user permissions to connect and manage the channel
+            },
+          ],
+        });
       
-      tempChannelCount++; // Increment the counter for the next temporary channel
-      // Move the user to the new channel
-      await member.voice.setChannel(tempChannel);
-
-      // Optional: Delete the channel when it becomes empty
-      const interval = setInterval(() => {
-        if (tempChannel.members.size === 0) {
-          tempChannel.delete();
-          clearInterval(interval);
-          tempChannelCount = Math.max(1, tempChannelCount - 1);
-        }
-      }, 60000); // Check every minute
+        tempChannelCount++; // Increment the counter for the next temporary channel
+        // Move the user to the new channel
+        await member.voice.setChannel(tempChannel);
+  
+        // Optional: Delete the channel when it becomes empty
+        const interval = setInterval(() => {
+          if (tempChannel.members.size === 0) {
+            tempChannel.delete();
+            clearInterval(interval);
+            tempChannelCount = Math.max(1, tempChannelCount - 1);
+          }
+        }, 60000); // Check every minute
+      } catch (error) {
+        console.error(`Error handling voice channel creation or user movement: ${error}`);
+      }
+    }
+    // Update voice activity
+    if (newState.channelId !== afkChannelId) {
+      voiceActivity.set(userId, Date.now());
     }
   }
-
   // User leaves a voice channel
   if (oldState.channelId && !newState.channelId) {
     voiceActivity.delete(userId); // Remove the user from the map
