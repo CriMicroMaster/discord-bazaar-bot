@@ -406,10 +406,6 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
             id: member.user.id,
             allow: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ManageChannels], // Give the user permissions to connect and manage the channel
           },
-          {
-            id: guild.roles.everyone.id,
-            deny: [PermissionsBitField.Flags.Connect], // Prevent others from joining initially
-          },
         ],
       });
       
