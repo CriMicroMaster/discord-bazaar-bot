@@ -377,12 +377,51 @@ client.on("interactionCreate", async (interaction) => {
 
 const voiceActivity = new Map();
 
-client.on("voiceStateUpdate", (oldState, newState) => {
+client.on("voiceStateUpdate", async (oldState, newState) => {
   const userId = newState.id;
+  const targetChannelId = '1280899273759916206';
 
   // User joins a voice channel
   if (!oldState.channelId && newState.channelId) {
     voiceActivity.set(userId, Date.now());
+
+    // Check if the user joined the specific voice channel
+    if (newState.channelId === targetChannelId) {
+      const guild = newState.guild;
+      const member = newState.member;
+
+      // Get the category of the original voice channel
+      const originalChannel = guild.channels.cache.get(targetChannelId);
+      const category = originalChannel.parent;
+
+      // Create a new temporary voice channel in the same category
+      const tempChannel = await guild.channels.create({
+        name: `${member.user.username}'s Channel`, // Customize the channel name as needed
+        type: 2, // 2 indicates a voice channel
+        parent: category, // Set the same category as the original channel
+        permissionOverwrites: [
+          {
+            id: member.user.id,
+            allow: ['CONNECT', 'MANAGE_CHANNELS'], // Give the user permissions to connect and manage the channel
+          },
+          {
+            id: guild.roles.everyone.id,
+            deny: ['CONNECT'], // Prevent others from joining initially
+          },
+        ],
+      });
+
+      // Move the user to the new channel
+      await member.voice.setChannel(tempChannel);
+
+      // Optional: Delete the channel when it becomes empty
+      const interval = setInterval(() => {
+        if (tempChannel.members.size === 0) {
+          tempChannel.delete();
+          clearInterval(interval);
+        }
+      }, 60000); // Check every minute
+    }
   }
 
   // User leaves a voice channel
