@@ -6,6 +6,7 @@ const keep_alive = require("./keep_alive.js");
 require('dotenv').config();
 
 const afkChannelId = "1278277819633504307";
+const targetChannelId = '1280899273759916206';
 
 // Initialize the Discord client
 const client = new Client({
@@ -384,7 +385,7 @@ const tempChannels = new Map();
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
   const userId = newState.id;
-  const targetChannelId = '1280899273759916206';
+  const guild = newState.guild;
 
   // User joins a voice channel
   if (!oldState.channelId && newState.channelId) {
