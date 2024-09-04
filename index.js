@@ -402,11 +402,11 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         permissionOverwrites: [
           {
             id: member.user.id,
-            allow: ['CONNECT', 'MANAGE_CHANNELS'], // Give the user permissions to connect and manage the channel
+            allow: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ManageChannels], // Give the user permissions to connect and manage the channel
           },
           {
             id: guild.roles.everyone.id,
-            deny: ['CONNECT'], // Prevent others from joining initially
+            deny: [PermissionsBitField.Flags.Connect], // Prevent others from joining initially
           },
         ],
       });
