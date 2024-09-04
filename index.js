@@ -433,10 +433,57 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
       voiceActivity.set(userId, Date.now());
     }
   }
-  
+
   // User switches channels
   if (oldState.channelId && newState.channelId) {
-    // Check if the old channel is a temporary channel
+    // Check if the user switched to the target channel
+    if (newState.channelId === targetChannelId) {
+      const member = newState.member;
+
+      try {
+        // Get the category of the original voice channel
+        const originalChannel = guild.channels.cache.get(targetChannelId);
+        if (!originalChannel) return; // Handle case where channel is not found
+        const category = originalChannel.parent;
+
+        // Create a new temporary voice channel in the same category
+        const tempChannel = await guild.channels.create({
+          name: `🍺Table ${tempChannelCount}`, // Customize the channel name as needed
+          type: 2, // 2 indicates a voice channel
+          parent: category, // Set the same category as the original channel
+          permissionOverwrites: [
+            {
+              id: member.user.id,
+              allow: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ManageChannels], // Allow user to connect and manage the channel
+            },
+            {
+              id: guild.roles.everyone.id,
+              deny: [PermissionsBitField.Flags.Connect], // Prevent others from joining initially
+            },
+          ],
+        });
+
+        tempChannels.set(tempChannel.id, tempChannel); // Track the temporary channel
+        tempChannelCount++; // Increment the counter for the next temporary channel
+
+        // Move the user to the new channel
+        await member.voice.setChannel(tempChannel);
+
+        // Optional: Delete the channel when it becomes empty
+        const interval = setInterval(() => {
+          if (tempChannel.members.size === 0) {
+            tempChannel.delete();
+            clearInterval(interval);
+            tempChannels.delete(tempChannel.id); // Remove from the map
+            tempChannelCount = Math.max(1, tempChannelCount - 1); // Ensure tempChannelCount does not go below 1
+          }
+        }, 60000); // Check every minute
+      } catch (error) {
+        console.error(`Error handling voice channel creation or user movement: ${error}`);
+      }
+    }
+
+    // Check if the user left a temporary channel
     if (tempChannels.has(oldState.channelId)) {
       const tempChannel = tempChannels.get(oldState.channelId);
       if (tempChannel && tempChannel.members.size === 0) {
