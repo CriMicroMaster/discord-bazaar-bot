@@ -416,14 +416,6 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         // Move the user to the new channel
         await member.voice.setChannel(tempChannel);
 
-        const interval = setInterval(() => {
-          if (tempChannel.members.size === 0) {
-            tempChannel.delete().catch(console.error); // Handle any errors during deletion
-            clearInterval(interval);
-            tempChannels.delete(tempChannel.id);
-            tempChannelCount = Math.max(1, tempChannelCount - 1); // Ensure tempChannelCount does not go below 1
-          }
-        }, 60000); // Check every minute
       } catch (error) {
         console.error(`Error handling voice channel creation or user movement: ${error}`);
       }
@@ -469,15 +461,6 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         // Move the user to the new channel
         await member.voice.setChannel(tempChannel);
 
-        // Optional: Delete the channel when it becomes empty
-        const interval = setInterval(() => {
-          if (tempChannel.members.size === 0) {
-            tempChannel.delete();
-            clearInterval(interval);
-            tempChannels.delete(tempChannel.id); // Remove from the map
-            tempChannelCount = Math.max(1, tempChannelCount - 1); // Ensure tempChannelCount does not go below 1
-          }
-        }, 60000); // Check every minute
       } catch (error) {
         console.error(`Error handling voice channel creation or user movement: ${error}`);
       }
