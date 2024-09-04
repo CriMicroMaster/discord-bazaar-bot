@@ -380,6 +380,7 @@ client.on("interactionCreate", async (interaction) => {
 const voiceActivity = new Map();
 
 let tempChannelCount = 1;
+const tempChannels = new Map();
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
   const userId = newState.id;
@@ -410,7 +411,8 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
             },
           ],
         });
-      
+
+        tempChannels.set(tempChannel.id, tempChannel);
         tempChannelCount++; // Increment the counter for the next temporary channel
         // Move the user to the new channel
         await member.voice.setChannel(tempChannel);
