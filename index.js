@@ -427,11 +427,14 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     }
   }
   // User leaves a voice channel
-  if (oldState.channelId && !newState.channelId) {
-    // If the user leaves a temporary channel, check if it's now empty
-    const tempChannel = tempChannels.get(oldState.channelId);
-    if (tempChannel) {
-      if (tempChannel.members.size === 0) {
+  if (oldState.channelId && newState.channelId) {
+    const oldChannel = guild.channels.cache.get(oldState.channelId);
+    const newChannel = guild.channels.cache.get(newState.channelId);
+
+    // Check if the old channel is a temporary channel
+    if (tempChannels.has(oldState.channelId)) {
+      const tempChannel = tempChannels.get(oldState.channelId);
+      if (tempChannel && tempChannel.members.size === 0) {
         try {
           await tempChannel.delete(); // Delete the channel immediately
           tempChannels.delete(tempChannel.id); // Remove from the map
@@ -441,7 +444,10 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
         }
       }
     }
-    
+  }
+
+  // User leaves a voice channel
+  if (oldState.channelId && !newState.channelId) {
     voiceActivity.delete(userId); // Remove the user from the map
   }
 });
