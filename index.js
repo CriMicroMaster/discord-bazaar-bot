@@ -507,12 +507,6 @@ client.on("messageCreate", async (message) => {
 
   const xpAmount = Math.floor(Math.random() * 3) + 1; // Random XP between 1 and 3
   const { leveledUp, level, xp } = await addXP(message.author.id, xpAmount);
-
-  if (leveledUp) {
-    message.channel.send(`${message.author.username} leveled up to level ${level}! 🎉`);
-  } else {
-    console.log(`${message.author.username} gained ${xpAmount} XP. Current level: ${level}, XP: ${xp}`);
-  }
 });
 
 client.on("ready", (c) => {
