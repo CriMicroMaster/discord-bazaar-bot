@@ -423,6 +423,9 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     // Update voice activity
     if (newState.channelId !== afkChannelId) {
       voiceActivity.set(userId, Date.now());
+
+      const user = newState.member.user; // Get the user object from the newState
+      console.log(`${user.username}'s voiceActivity updated.`);
     }
   }
 
@@ -468,6 +471,9 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
     if (newState.channelId !== afkChannelId) {
       voiceActivity.set(userId, Date.now());
+
+      const user = newState.member.user; // Get the user object from the newState
+      console.log(`${user.username}'s voiceActivity updated.`);
     }
   }
     
@@ -490,6 +496,9 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   // User leaves a voice channel
   if (oldState.channelId && !newState.channelId) {
     voiceActivity.delete(userId); // Remove the user from the map
+    
+    const user = oldState.member.user; // Get the user object from the oldState
+    console.log(`${user.username}'s voiceActivity deleted.`);
   }
 });
 
