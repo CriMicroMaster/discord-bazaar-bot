@@ -225,7 +225,7 @@ client.on("interactionCreate", async (interaction) => {
     // 50/50 chance
     const flipResult = Math.random() < 0.5;
 
-    const xpReward = 2;
+    const xpReward = Math.floor(Math.random() * 3) + 1;
     const { leveledUp, level, xp } = await addXP(userId, xpReward);
     
     if (flipResult) {
@@ -499,6 +499,19 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     
     const user = oldState.member.user; // Get the user object from the oldState
     console.log(`${user.username} left a channel.`);
+  }
+});
+
+client.on("messageCreate", async (message) => {
+  if (message.author.bot) return; // Ignore bot messages
+
+  const xpAmount = Math.floor(Math.random() * 3) + 1; // Random XP between 1 and 3
+  const { leveledUp, level, xp } = await addXP(message.author.id, xpAmount);
+
+  if (leveledUp) {
+    message.channel.send(`${message.author.username} leveled up to level ${level}! 🎉`);
+  } else {
+    console.log(`${message.author.username} gained ${xpAmount} XP. Current level: ${level}, XP: ${xp}`);
   }
 });
 
