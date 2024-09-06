@@ -426,6 +426,8 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
       const user = newState.member.user; // Get the user object from the newState
       console.log(`${user.username} joined a channel.`);
+    } else {
+      voiceActivity.delete(userId);
     }
   }
 
@@ -474,6 +476,8 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
       const user = newState.member.user; // Get the user object from the newState
       console.log(`${user.username} switched to another channel.`);
+    } else {
+      voiceActivity.delete(userId);
     }
   }
     
