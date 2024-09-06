@@ -516,6 +516,21 @@ client.on("messageCreate", async (message) => {
 client.on("ready", (c) => {
   console.log(`${c.user.tag} is online.`);
 
+  client.guilds.cache.forEach(guild => {
+    guild.channels.cache.forEach(channel => {
+      if (channel.type === 2) { // Check if the channel is a voice channel
+        channel.members.forEach(member => {
+          if (!voiceActivity.has(member.user.id)) {
+            if (channel.id !== afkChannelId) {
+              voiceActivity.set(userId, Date.now());
+              console.log(`Found user ${member.user.tag} in voice channel ${channel.name}`);
+            }
+          }
+        });
+      }
+    });
+  });
+  
   // Function to update the bot's activity based on the time
   const updateActivity = () => {
     const currentHour = new Date().getHours();
