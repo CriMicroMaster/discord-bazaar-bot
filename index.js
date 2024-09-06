@@ -522,7 +522,7 @@ client.on("ready", (c) => {
         channel.members.forEach(member => {
           if (!voiceActivity.has(member.user.id)) {
             if (channel.id !== afkChannelId) {
-              voiceActivity.set(userId, Date.now());
+              voiceActivity.set(member.user.id, Date.now());
               console.log(`Found user ${member.user.tag} in voice channel ${channel.name}`);
             }
           }
