@@ -5,7 +5,7 @@ const keep_alive = require("./keep_alive.js");
 
 require('dotenv').config();
 
-const afkChannelId = "1278277819633504307";
+const afkChannelId = "1281677190592725032";
 const targetChannelId = '1280899273759916206';
 
 // Initialize the Discord client
