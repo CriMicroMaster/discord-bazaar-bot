@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors, Permissio
 const { Sequelize, DataTypes, Op } = require("sequelize");
 const slash_deploy = require("./slash_deploy.js")
 const keep_alive = require("./keep_alive.js");
- 
+
 require('dotenv').config();
 
 const afkChannelId = "1281677190592725032";
