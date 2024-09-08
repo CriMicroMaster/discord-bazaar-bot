@@ -339,6 +339,7 @@ client.on("interactionCreate", async (interaction) => {
       wallet.gold += winnings;
       botWallet.gold -= winnings;
       await wallet.save();
+      await botWallet.save();
   
       const embed = new EmbedBuilder()
         .setTitle(`${interaction.user.username}'s Blackjack Game`)
@@ -469,7 +470,7 @@ client.on("interactionCreate", async (interaction) => {
         } else {
           // It's a tie
           winnings = betAmount;
-          wallet.gold += winnings // Return the bet amount to the player's balance
+          wallet.gold += winnings; // Return the bet amount to the player's balance
           botWallet.gold -= winnings;
           result = `It's a tie!🤝 Your ${betAmount} gold bet has been returned.`;
           if (logChannel) {
