@@ -392,8 +392,10 @@ client.on("interactionCreate", async (interaction) => {
           // Player wins
           winnings = betAmount;
           if (playerValue === 21 && playerHand.length === 2) {
-            // Player wins with a Blackjack
-            winnings = betAmount * 1.5;
+          // Player wins with a Blackjack
+            winnings = betAmount * 2.5; // Blackjack pays 2.5 times the bet
+          } else {
+            winnings = betAmount * 2; // Regular win pays double the bet
           }
           wallet.gold += winnings; // Award the winnings
           result = `You win! 🎉 You earned ${winnings} gold.`;
@@ -402,7 +404,6 @@ client.on("interactionCreate", async (interaction) => {
           result = `You lose! 😢 You lost ${betAmount} gold.`;
         } else {
           // It's a tie
-          winnings = betAmount; // Return the bet amount
           wallet.gold += winnings // Return the bet amount to the player's balance
           result = `It's a tie! 🤝 Your ${betAmount} gold bet has been returned.`;
         }
