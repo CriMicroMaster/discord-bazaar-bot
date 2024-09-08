@@ -304,6 +304,9 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.commandName === 'blackjack') {
+    const botId = "1278315648493027378";
+    const [botWallet] = await Wallet.findOrCreate({ where: { userId: botId } });
+    
     const betAmount = interaction.options.getInteger('bet');
     const [wallet] = await Wallet.findOrCreate({
       where: { userId: interaction.user.id },
@@ -318,7 +321,9 @@ client.on("interactionCreate", async (interaction) => {
 
     // Deduct the bet amount
     wallet.gold -= betAmount;
+    botWallet.gold += winnings;
     await wallet.save();
+    await botWallet.save();
     
     const playerHand = [getRandomCard(), getRandomCard()];
     const dealerHand = [getRandomCard(), getRandomCard()];
@@ -332,6 +337,7 @@ client.on("interactionCreate", async (interaction) => {
       // Player has Blackjack, handle result immediately
       const winnings = Math.ceil(betAmount * 2.5); // Blackjack payout
       wallet.gold += winnings;
+      botWallet.gold -= winnings;
       await wallet.save();
   
       const embed = new EmbedBuilder()
@@ -445,6 +451,7 @@ client.on("interactionCreate", async (interaction) => {
             winnings = betAmount * 2; // Regular win pays double the bet
           }
           wallet.gold += winnings; // Award the winnings
+          botWallet.gold -= winnings;
           result = `Congratulations!🎉 You earned ${winnings} gold.`;
           if (logChannel) {
             logChannel.send(
@@ -463,6 +470,7 @@ client.on("interactionCreate", async (interaction) => {
           // It's a tie
           winnings = betAmount;
           wallet.gold += winnings // Return the bet amount to the player's balance
+          botWallet.gold -= winnings;
           result = `It's a tie!🤝 Your ${betAmount} gold bet has been returned.`;
           if (logChannel) {
             logChannel.send(
@@ -470,6 +478,7 @@ client.on("interactionCreate", async (interaction) => {
             );
           }
         }
+        await botWallet.save();
         await wallet.save();
         
         embed.setFields(
