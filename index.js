@@ -353,6 +353,8 @@ client.on("interactionCreate", async (interaction) => {
     let playerTurn = true;
 
     collector.on('collect', async i => {
+      const logChannel = await client.channels.fetch(logChannelId);
+      
       if (i.customId === 'hit' && playerTurn) {
         playerHand.push(getRandomCard());
         const playerValue = calculateHandValue(playerHand);
@@ -366,6 +368,11 @@ client.on("interactionCreate", async (interaction) => {
           );
           playerTurn = false;
           await i.update({ embeds: [embed], components: [], ephemeral: true });
+          if (logChannel) {
+            logChannel.send(
+              `**Blackjack**: ${interaction.user.username} busted with ${playerValue} and lost ${betAmount} gold.`
+            );
+          }
           collector.stop();
         } else {
           // Update the player's hand
@@ -403,13 +410,28 @@ client.on("interactionCreate", async (interaction) => {
           }
           wallet.gold += winnings; // Award the winnings
           result = `Congratulations!🎉 You earned ${winnings} gold.`;
+          if (logChannel) {
+            logChannel.send(
+              `**Blackjack**: ${interaction.user.username} won ${winnings} gold.`
+            );
+          }
         } else if (playerValue < dealerValue) {
           // Player loses
           result = `Ahh dang it!😢 You lost ${betAmount} gold.`;
+          if (logChannel) {
+            logChannel.send(
+              `**Blackjack**: ${interaction.user.username} lost ${betAmount} gold.`
+            );
+          }
         } else {
           // It's a tie
           wallet.gold += winnings // Return the bet amount to the player's balance
           result = `It's a tie!🤝 Your ${betAmount} gold bet has been returned.`;
+          if (logChannel) {
+            logChannel.send(
+              `**Blackjack**: ${interaction.user.username} tied and had ${betAmount} gold returned.`
+            );
+          }
         }
         await wallet.save();
         
@@ -424,6 +446,11 @@ client.on("interactionCreate", async (interaction) => {
         playerTurn = false;
         embed.addFields({ name: 'Result', value: 'You surrendered! 🏳️', inline: false });
         await i.update({ embeds: [embed], components: [], ephemeral: true });
+        if (logChannel) {
+          logChannel.send(
+            `**Blackjack**: ${interaction.user.username} surrendered and lost ${betAmount} gold.`
+          );
+        }
         collector.stop();
       }
     });
