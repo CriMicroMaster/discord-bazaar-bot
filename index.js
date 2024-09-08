@@ -359,7 +359,11 @@ client.on("interactionCreate", async (interaction) => {
 
         if (playerValue > 21) {
           // Player busts
-          embed.addFields({ name: 'Result', value: 'You busted! 💥', inline: false });
+          embed.setFields(
+            { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}\n**Value:** ${playerValue}`, inline: true },
+            { name: 'Dealer\'s Hand', value: `${dealerHand[0].value}${dealerHand[0].suit} ??`, inline: true },
+            { name: 'Result', value: `You busted with a value of ${playerValue}! 💥`, inline: false }
+          );
           playerTurn = false;
           await i.update({ embeds: [embed], components: [], ephemeral: true });
           collector.stop();
