@@ -327,7 +327,7 @@ client.on("interactionCreate", async (interaction) => {
 
      if (playerHasBlackjack) {
       // Player has Blackjack, handle result immediately
-      const winnings = betAmount * 2.5; // Blackjack payout
+      const winnings = Math.ceil(betAmount * 2.5); // Blackjack payout
       wallet.gold += winnings;
       await wallet.save();
   
@@ -437,7 +437,7 @@ client.on("interactionCreate", async (interaction) => {
           winnings = betAmount;
           if (playerValue === 21 && playerHand.length === 2) {
           // Player wins with a Blackjack
-            winnings = betAmount * 2.5; // Blackjack pays 2.5 times the bet
+            winnings = Math.ceil(betAmount * 2.5); // Blackjack pays 2.5 times the bet
           } else {
             winnings = betAmount * 2; // Regular win pays double the bet
           }
