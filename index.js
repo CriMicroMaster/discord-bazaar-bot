@@ -324,7 +324,7 @@ client.on("interactionCreate", async (interaction) => {
     const embed = new EmbedBuilder()
       .setTitle(`${interaction.user.username}'s Blackjack Game`)
       .addFields(
-        { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
+        { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}\n**Value:** ${calculateHandValue(playerHand)}`, inline: true },
         { name: 'Dealer\'s Hand', value: `${dealerHand[0].value}${dealerHand[0].suit} ??`, inline: true }
       )
       .setColor('#0099ff');
