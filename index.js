@@ -407,8 +407,8 @@ client.on("interactionCreate", async (interaction) => {
         await wallet.save();
         
         embed.setFields(
-          { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
-          { name: 'Dealer\'s Hand', value: `${dealerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
+          { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}\n**Value:** ${playerValue}`, inline: true },
+          { name: 'Dealer\'s Hand', value: `${dealerHand.map(card => `${card.value}${card.suit}`).join(' ')}\n**Value:** ${dealerValue}`, inline: true },
           { name: 'Result', value: result, inline: false }
         );
 
