@@ -345,7 +345,7 @@ client.on("interactionCreate", async (interaction) => {
           .setStyle(ButtonStyle.Danger)
       );
 
-    const message = await interaction.reply({ embeds: [embed], components: [row], fetchReply: true });
+    const message = await interaction.reply({ embeds: [embed], components: [row], ephemeral: true, fetchReply: true });
 
     const filter = i => i.user.id === interaction.user.id;
     const collector = message.createMessageComponentCollector({ filter, time: 60000 });
@@ -361,7 +361,7 @@ client.on("interactionCreate", async (interaction) => {
           // Player busts
           embed.addFields({ name: 'Result', value: 'You busted! 💥', inline: false });
           playerTurn = false;
-          await i.update({ embeds: [embed], components: [] });
+          await i.update({ embeds: [embed], components: [], ephemeral: true });
           collector.stop();
         } else {
           // Update the player's hand
@@ -369,7 +369,7 @@ client.on("interactionCreate", async (interaction) => {
             { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}\n**Value:** ${playerValue}`, inline: true },
             { name: 'Dealer\'s Hand', value: `${dealerHand[0].value}${dealerHand[0].suit} ??`, inline: true }
           );
-          await i.update({ embeds: [embed] });
+          await i.update({ embeds: [embed], ephemeral: true });
         }
       } else if (i.customId === 'stand' && playerTurn) {
         playerTurn = false;
@@ -412,11 +412,11 @@ client.on("interactionCreate", async (interaction) => {
           { name: 'Result', value: result, inline: false }
         );
 
-        await i.update({ embeds: [embed], components: [] });
+        await i.update({ embeds: [embed], components: [], ephemeral: true });
       } else if (i.customId === 'surrender') {
         playerTurn = false;
         embed.addFields({ name: 'Result', value: 'You surrendered! 🏳️', inline: false });
-        await i.update({ embeds: [embed], components: [] });
+        await i.update({ embeds: [embed], components: [], ephemeral: true });
         collector.stop();
       }
     });
@@ -424,7 +424,7 @@ client.on("interactionCreate", async (interaction) => {
     collector.on('end', collected => {
       if (playerTurn) {
         embed.addFields({ name: 'Result', value: 'You took too long and forfeited the game! ⏳', inline: false });
-        interaction.editReply({ embeds: [embed], components: [] });
+        interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
       }
     });
   }
