@@ -309,26 +309,28 @@ client.on("interactionCreate", async (interaction) => {
     const dealerHand = [getRandomCard(), getRandomCard()];
 
     // Initial embeds showing hands
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setTitle(`${interaction.user.username}'s Blackjack Game`)
-      .addField('Your Hand', `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, true)
-      .addField('Dealer\'s Hand', `${dealerHand[0].value}${dealerHand[0].suit} ??`, true)
+      .addFields(
+        { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
+        { name: 'Dealer\'s Hand', value: `${dealerHand[0].value}${dealerHand[0].suit} ??`, inline: true }
+      )
       .setColor('#0099ff');
 
-    const row = new MessageActionRow()
+    const row = new ActionRowBuilder()
       .addComponents(
-        new MessageButton()
+        new ButtonBuilder()
           .setCustomId('hit')
           .setLabel('Hit')
-          .setStyle('PRIMARY'),
-        new MessageButton()
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
           .setCustomId('stand')
           .setLabel('Stand')
-          .setStyle('SUCCESS'),
-        new MessageButton()
+          .setStyle(ButtonStyle.Success),
+        new ButtonBuilder()
           .setCustomId('surrender')
           .setLabel('Surrender')
-          .setStyle('DANGER')
+          .setStyle(ButtonStyle.Danger)
       );
 
     const message = await interaction.reply({ embeds: [embed], components: [row], fetchReply: true });
@@ -345,13 +347,16 @@ client.on("interactionCreate", async (interaction) => {
 
         if (playerValue > 21) {
           // Player busts
-          embed.addField('Result', 'You busted! 💥', false);
+          embed.addFields({ name: 'Result', value: 'You busted! 💥', inline: false });
           playerTurn = false;
           await i.update({ embeds: [embed], components: [] });
           collector.stop();
         } else {
           // Update the player's hand
-          embed.fields[0] = { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true };
+          embed.setFields(
+            { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
+            { name: 'Dealer\'s Hand', value: `${dealerHand[0].value}${dealerHand[0].suit} ??`, inline: true }
+          );
           await i.update({ embeds: [embed] });
         }
       } else if (i.customId === 'stand' && playerTurn) {
@@ -377,13 +382,16 @@ client.on("interactionCreate", async (interaction) => {
           result = 'It\'s a tie! 🤝';
         }
 
-        embed.addField('Dealer\'s Hand', `${dealerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, true)
-          .addField('Result', result, false);
+        embed.setFields(
+          { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
+          { name: 'Dealer\'s Hand', value: `${dealerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
+          { name: 'Result', value: result, inline: false }
+        );
 
         await i.update({ embeds: [embed], components: [] });
       } else if (i.customId === 'surrender') {
         playerTurn = false;
-        embed.addField('Result', 'You surrendered! 🏳️', false);
+        embed.addFields({ name: 'Result', value: 'You surrendered! 🏳️', inline: false });
         await i.update({ embeds: [embed], components: [] });
         collector.stop();
       }
@@ -391,7 +399,7 @@ client.on("interactionCreate", async (interaction) => {
 
     collector.on('end', collected => {
       if (playerTurn) {
-        embed.addField('Result', 'You took too long and forfeited the game! ⏳', false);
+        embed.addFields({ name: 'Result', value: 'You took too long and forfeited the game! ⏳', inline: false });
         interaction.editReply({ embeds: [embed], components: [] });
       }
     });
