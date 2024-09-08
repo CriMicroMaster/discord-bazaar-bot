@@ -305,6 +305,18 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === 'blackjack') {
     const betAmount = interaction.options.getInteger('bet');
+    const [wallet] = await Wallet.findOrCreate({
+      where: { userId: interaction.user.id },
+    });
+
+    if (wallet.gold < betAmount) {
+      return interaction.reply('You do not have enough gold to place this bet.');
+    }
+
+    // Deduct the bet amount
+    wallet.gold -= betAmount;
+    await wallet.save();
+    
     const playerHand = [getRandomCard(), getRandomCard()];
     const dealerHand = [getRandomCard(), getRandomCard()];
 
