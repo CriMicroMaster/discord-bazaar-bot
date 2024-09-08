@@ -279,17 +279,32 @@ client.on("interactionCreate", async (interaction) => {
 
     // Build leaderboard message
     let leaderboardMessage = "🏆 **Leaderboard** 🏆\n";
-    for (const [index, wallet] of topUsers.entries()) {
+    let count = 0;
+    
+    for (const wallet of topUsers) {
       let username = "Unknown";
+      let isBot = false;
       try {
         // Attempt to fetch user from cache
         const user = await client.users.fetch(wallet.userId);
         username = user.username;
+
+        // Check if the user is a bot
+        if (user.bot) {
+          isBot = true;
+        }
       } catch (error) {
         console.error(`Failed to fetch user with ID ${wallet.userId}:`, error);
       }
 
-      leaderboardMessage += `**${index + 1}.** ${username} - ${wallet.gold} gold\n`;
+      // Exclude bots from the leaderboard
+      if (!isBot) {
+        leaderboardMessage += `**${count + 1}.** ${username} - ${wallet.gold} gold\n`;
+        count++;
+      }
+
+      // Stop after 10 valid users
+      if (count >= 10) break;
     }
 
     await interaction.reply({
