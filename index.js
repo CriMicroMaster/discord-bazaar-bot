@@ -362,7 +362,7 @@ client.on("interactionCreate", async (interaction) => {
           embed.setFields(
             { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}\n**Value:** ${playerValue}`, inline: true },
             { name: 'Dealer\'s Hand', value: `${dealerHand[0].value}${dealerHand[0].suit} ??`, inline: true },
-            { name: 'Result', value: `You busted with a value of ${playerValue}! 💥`, inline: false }
+            { name: 'Result', value: `You busted!💥`, inline: false }
           );
           playerTurn = false;
           await i.update({ embeds: [embed], components: [], ephemeral: true });
@@ -402,14 +402,14 @@ client.on("interactionCreate", async (interaction) => {
             winnings = betAmount * 2; // Regular win pays double the bet
           }
           wallet.gold += winnings; // Award the winnings
-          result = `You win! 🎉 You earned ${winnings} gold.`;
+          result = `Congratulations!🎉 You earned ${winnings} gold.`;
         } else if (playerValue < dealerValue) {
           // Player loses
-          result = `You lose! 😢 You lost ${betAmount} gold.`;
+          result = `Ahh dang it!😢 You lost ${betAmount} gold.`;
         } else {
           // It's a tie
           wallet.gold += winnings // Return the bet amount to the player's balance
-          result = `It's a tie! 🤝 Your ${betAmount} gold bet has been returned.`;
+          result = `It's a tie!🤝 Your ${betAmount} gold bet has been returned.`;
         }
         await wallet.save();
         
