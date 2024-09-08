@@ -402,6 +402,8 @@ client.on("interactionCreate", async (interaction) => {
           result = `You lose! 😢 You lost ${betAmount} gold.`;
         } else {
           // It's a tie
+          winnings = betAmount; // Return the bet amount
+          wallet.gold += winnings // Return the bet amount to the player's balance
           result = `It's a tie! 🤝 Your ${betAmount} gold bet has been returned.`;
         }
         await wallet.save();
