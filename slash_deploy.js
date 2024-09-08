@@ -43,7 +43,8 @@ const slashRegister = async () => {
             option
               .setName("amount")
               .setDescription("The amount of gold to bet")
-              .setRequired(true),
+              .setRequired(true)
+              .setMinValue(1),
           ),
         new SlashCommandBuilder()
           .setName("daily")
@@ -98,6 +99,14 @@ const slashRegister = async () => {
             option.setName('user')
               .setDescription('The user whose stats you want to check.')
               .setRequired(false)),
+        new SlashCommandBuilder()
+          .setName('blackjack')
+          .setDescription('Play a game of blackjack and bet some gold!')
+          .addIntegerOption(option =>
+            option.setName('bet')
+              .setDescription('The amount of gold to bet.')
+              .setRequired(true)
+              .setMinValue(1) // Minimum bet of 1 gold
       ],
     });
 
