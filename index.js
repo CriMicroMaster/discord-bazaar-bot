@@ -461,6 +461,7 @@ client.on("interactionCreate", async (interaction) => {
           }
         } else {
           // It's a tie
+          winnings = betAmount;
           wallet.gold += winnings // Return the bet amount to the player's balance
           result = `It's a tie!🤝 Your ${betAmount} gold bet has been returned.`;
           if (logChannel) {
