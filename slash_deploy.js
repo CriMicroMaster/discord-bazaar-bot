@@ -78,7 +78,7 @@ const slashRegister = async () => {
                   .setName("user")
                   .setDescription("The user to remove gold from")
                   .setRequired(true))
-              .addFloatOption(option =>
+              .addNumberOption(option =>
                 option
                   .setName("amount")
                   .setDescription("The amount of gold to remove")
