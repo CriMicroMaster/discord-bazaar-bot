@@ -316,14 +316,8 @@ client.on("interactionCreate", async (interaction) => {
     // Deduct the bet amount
     wallet.gold -= betAmount;
     await wallet.save();
-
-    const queenOfHearts = { value: 'Q', suit: '♥' }; // Adjust suit if needed
-    const aceOfSpades = { value: 'A', suit: '♠' }; // Adjust suit if needed
-  
-    // Player's hand: always start with a Queen and an Ace
-    const playerHand = [queenOfHearts, aceOfSpades];
     
-    // const playerHand = [getRandomCard(), getRandomCard()];
+    const playerHand = [getRandomCard(), getRandomCard()];
     const dealerHand = [getRandomCard(), getRandomCard()];
 
     const playerValue = calculateHandValue(playerHand);
