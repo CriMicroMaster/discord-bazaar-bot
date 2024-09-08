@@ -321,7 +321,7 @@ client.on("interactionCreate", async (interaction) => {
 
     // Deduct the bet amount
     wallet.gold -= betAmount;
-    botWallet.gold += winnings;
+    botWallet.gold += betAmount;
     await wallet.save();
     await botWallet.save();
     
