@@ -320,6 +320,8 @@ client.on("interactionCreate", async (interaction) => {
     const playerHand = [getRandomCard(), getRandomCard()];
     const dealerHand = [getRandomCard(), getRandomCard()];
 
+    let playerHasBlackjack = playerValue === 21 && playerHand.length === 2;
+
     // Initial embeds showing hands
     const embed = new EmbedBuilder()
       .setTitle(`${interaction.user.username}'s Blackjack Game`)
@@ -347,6 +349,31 @@ client.on("interactionCreate", async (interaction) => {
 
     const message = await interaction.reply({ embeds: [embed], components: [row], ephemeral: true, fetchReply: true });
 
+    if (playerHasBlackjack) {
+      // Player has Blackjack, automatically handle result
+      const winnings = betAmount * 2.5; // Blackjack payout
+      wallet.gold += winnings;
+      await wallet.save();
+      
+      embed.setFields(
+        { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}\n**Value:** ${playerValue}`, inline: true },
+        { name: 'Dealer\'s Hand', value: `${dealerHand.map(card => `${card.value}${card.suit}`).join(' ')}\n**Value:** ${dealerValue}`, inline: true },
+        { name: 'Result', value: `Blackjack! 🎉 You won ${winnings} gold.` }
+      );
+  
+      await message.edit({ embeds: [embed], components: [] });
+  
+      const logChannel = await client.channels.fetch(logChannelId);
+      if (logChannel) {
+        logChannel.send(
+          `**Blackjack**: ${interaction.user.username} had a Blackjack and won ${winnings} gold.`
+        );
+      }
+      
+      return; // Exit early
+    }
+
+    // Continue with the rest of the game if not a Blackjack
     const filter = i => i.user.id === interaction.user.id;
     const collector = message.createMessageComponentCollector({ filter, time: 60000 });
 
