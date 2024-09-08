@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors, PermissionsBitField  } = require("discord.js");
+const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors, PermissionsBitField, MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
 const { Sequelize, DataTypes, Op } = require("sequelize");
 const slash_deploy = require("./slash_deploy.js")
 const keep_alive = require("./keep_alive.js");
@@ -18,6 +18,7 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,
   ],
 });
+
 
 async function addXP(userId, amount) {
   const [wallet] = await Wallet.findOrCreate({
@@ -39,6 +40,38 @@ async function addXP(userId, amount) {
   await wallet.save();
 
   return { leveledUp, level: wallet.level, xp: wallet.xp };
+}
+
+function getRandomCard() {
+  const suits = ['♠️', '♥️', '♦️', '♣️'];
+  const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  const suit = suits[Math.floor(Math.random() * suits.length)];
+  const value = values[Math.floor(Math.random() * values.length)];
+  return { suit, value };
+}
+
+function calculateHandValue(hand) {
+  let value = 0;
+  let aceCount = 0;
+
+  hand.forEach(card => {
+    if (card.value === 'A') {
+      aceCount++;
+      value += 11;
+    } else if (['J', 'Q', 'K'].includes(card.value)) {
+      value += 10;
+    } else {
+      value += parseInt(card.value);
+    }
+  });
+
+  // Adjust for Aces if value exceeds 21
+  while (value > 21 && aceCount > 0) {
+    value -= 10;
+    aceCount--;
+  }
+
+  return value;
 }
 
 const getRandomReward = (rewards) => {
@@ -268,6 +301,100 @@ client.on("interactionCreate", async (interaction) => {
 
     await botWallet.save();
     await wallet.save();
+  }
+
+  if (interaction.commandName === 'blackjack') {
+    const betAmount = interaction.options.getInteger('bet');
+    const playerHand = [getRandomCard(), getRandomCard()];
+    const dealerHand = [getRandomCard(), getRandomCard()];
+
+    // Initial embeds showing hands
+    const embed = new MessageEmbed()
+      .setTitle(`${interaction.user.username}'s Blackjack Game`)
+      .addField('Your Hand', `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, true)
+      .addField('Dealer\'s Hand', `${dealerHand[0].value}${dealerHand[0].suit} ??`, true)
+      .setColor('#0099ff');
+
+    const row = new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+          .setCustomId('hit')
+          .setLabel('Hit')
+          .setStyle('PRIMARY'),
+        new MessageButton()
+          .setCustomId('stand')
+          .setLabel('Stand')
+          .setStyle('SUCCESS'),
+        new MessageButton()
+          .setCustomId('surrender')
+          .setLabel('Surrender')
+          .setStyle('DANGER')
+      );
+
+    const message = await interaction.reply({ embeds: [embed], components: [row], fetchReply: true });
+
+    const filter = i => i.user.id === interaction.user.id;
+    const collector = message.createMessageComponentCollector({ filter, time: 60000 });
+
+    let playerTurn = true;
+
+    collector.on('collect', async i => {
+      if (i.customId === 'hit' && playerTurn) {
+        playerHand.push(getRandomCard());
+        const playerValue = calculateHandValue(playerHand);
+
+        if (playerValue > 21) {
+          // Player busts
+          embed.addField('Result', 'You busted! 💥', false);
+          playerTurn = false;
+          await i.update({ embeds: [embed], components: [] });
+          collector.stop();
+        } else {
+          // Update the player's hand
+          embed.fields[0] = { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true };
+          await i.update({ embeds: [embed] });
+        }
+      } else if (i.customId === 'stand' && playerTurn) {
+        playerTurn = false;
+        collector.stop();
+
+        // Dealer's turn
+        let dealerValue = calculateHandValue(dealerHand);
+        while (dealerValue < 17) {
+          dealerHand.push(getRandomCard());
+          dealerValue = calculateHandValue(dealerHand);
+        }
+
+        const playerValue = calculateHandValue(playerHand);
+
+        // Determine the outcome
+        let result;
+        if (dealerValue > 21 || playerValue > dealerValue) {
+          result = 'You win! 🎉';
+        } else if (playerValue < dealerValue) {
+          result = 'You lose! 😢';
+        } else {
+          result = 'It\'s a tie! 🤝';
+        }
+
+        embed.addField('Dealer\'s Hand', `${dealerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, true)
+          .addField('Result', result, false);
+
+        await i.update({ embeds: [embed], components: [] });
+      } else if (i.customId === 'surrender') {
+        playerTurn = false;
+        embed.addField('Result', 'You surrendered! 🏳️', false);
+        await i.update({ embeds: [embed], components: [] });
+        collector.stop();
+      }
+    });
+
+    collector.on('end', collected => {
+      if (playerTurn) {
+        embed.addField('Result', 'You took too long and forfeited the game! ⏳', false);
+        interaction.editReply({ embeds: [embed], components: [] });
+      }
+    });
   }
 
   if (interaction.commandName === "leaderboard") {
