@@ -370,7 +370,7 @@ client.on("interactionCreate", async (interaction) => {
           await i.update({ embeds: [embed], components: [], ephemeral: true });
           if (logChannel) {
             logChannel.send(
-              `**Blackjack**: ${interaction.user.username} busted with ${playerValue} and lost ${betAmount} gold.`
+              `**Blackjack**: ${interaction.user.username} busted and lost ${betAmount} gold.`
             );
           }
           collector.stop();
