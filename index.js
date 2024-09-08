@@ -310,7 +310,10 @@ client.on("interactionCreate", async (interaction) => {
     });
 
     if (wallet.gold < betAmount) {
-      return interaction.reply('You do not have enough gold to place this bet.');
+      return interaction.reply({
+        content: 'You do not have enough gold to place this bet.',
+        ephemeral: true
+      });
     }
 
     // Deduct the bet amount
