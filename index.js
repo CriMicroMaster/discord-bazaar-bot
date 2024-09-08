@@ -354,7 +354,7 @@ client.on("interactionCreate", async (interaction) => {
         } else {
           // Update the player's hand
           embed.setFields(
-            { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
+            { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}\n**Value:** ${playerValue}`, inline: true },
             { name: 'Dealer\'s Hand', value: `${dealerHand[0].value}${dealerHand[0].suit} ??`, inline: true }
           );
           await i.update({ embeds: [embed] });
@@ -372,16 +372,28 @@ client.on("interactionCreate", async (interaction) => {
 
         const playerValue = calculateHandValue(playerHand);
 
-        // Determine the outcome
+        let winnings = 0;
         let result;
+        // Determine the outcome
+        
         if (dealerValue > 21 || playerValue > dealerValue) {
-          result = 'You win! 🎉';
+          // Player wins
+          winnings = betAmount;
+          if (playerValue === 21 && playerHand.length === 2) {
+            // Player wins with a Blackjack
+            winnings = betAmount * 1.5;
+          }
+          wallet.gold += winnings; // Award the winnings
+          result = `You win! 🎉 You earned ${winnings} gold.`;
         } else if (playerValue < dealerValue) {
-          result = 'You lose! 😢';
+          // Player loses
+          result = `You lose! 😢 You lost ${betAmount} gold.`;
         } else {
-          result = 'It\'s a tie! 🤝';
+          // It's a tie
+          result = `It's a tie! 🤝 Your ${betAmount} gold bet has been returned.`;
         }
-
+        await wallet.save();
+        
         embed.setFields(
           { name: 'Your Hand', value: `${playerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
           { name: 'Dealer\'s Hand', value: `${dealerHand.map(card => `${card.value}${card.suit}`).join(' ')}`, inline: true },
