@@ -320,6 +320,9 @@ client.on("interactionCreate", async (interaction) => {
     const playerHand = [getRandomCard(), getRandomCard()];
     const dealerHand = [getRandomCard(), getRandomCard()];
 
+    const playerValue = calculateHandValue(playerHand);
+    const dealerValue = calculateHandValue(dealerHand);
+
     let playerHasBlackjack = playerValue === 21 && playerHand.length === 2;
 
     // Initial embeds showing hands
