@@ -122,7 +122,7 @@ const slashRegister = async () => {
                   .setRequired(false)
                   .addChoices(
                       { name: 'Random', value: 'Random' },
-                      { name: 'Complain', value: 'Complain' }
+                      { name: 'British', value: 'British' }
                   )),
       ],
     });
