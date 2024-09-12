@@ -115,7 +115,7 @@ const slashRegister = async () => {
                   .setDescription('Volume of the sound (0.1 to 2)')
                   .setRequired(false)
                   .setMinValue(0.1)
-                  .setMaxValue(2)),
+                  .setMaxValue(2))
           .addStringOption(option =>
               option.setName('folder')
                   .setDescription('The folder to play sounds from (Random or Complain)')
@@ -123,7 +123,7 @@ const slashRegister = async () => {
                   .addChoices(
                       { name: 'Random', value: 'Random' },
                       { name: 'Complain', value: 'Complain' }
-                  )
+                  ),
       ],
     });
 
