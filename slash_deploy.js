@@ -109,7 +109,13 @@ const slashRegister = async () => {
               .setMinValue(1)), // Minimum bet of 1 gold
         new SlashCommandBuilder()
           .setName('playsound')
-          .setDescription('Play a sound!')
+          .setDescription('Play a random sound from the soundboard')
+          .addNumberOption(option => 
+              option.setName('volume')
+                  .setDescription('Volume of the sound (0.1 to 2)')
+                  .setRequired(false)
+                  .setMinValue(0.1)
+                  .setMaxValue(2)),
       ],
     });
 
