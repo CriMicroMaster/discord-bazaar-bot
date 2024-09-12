@@ -21,11 +21,17 @@ client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
     if (interaction.commandName === 'playsound') {
-        const volume = interaction.options.getNumber("volume");
-        
         const channel = interaction.member.voice.channel;
         if (!channel) {
             return interaction.reply('You need to be in a voice channel to use this command!');
+        }
+
+        // Get the volume option
+        const volume = interaction.options.getNumber('volume') || 1; // Default to 1 if not provided
+
+        // Validate the volume value
+        if (volume < 0.1 || volume > 2) {
+            return interaction.reply('Volume must be between 0.1 and 2.');
         }
 
         // Get a random sound file from the 'Sounds' folder
