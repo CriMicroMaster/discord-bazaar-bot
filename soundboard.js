@@ -22,7 +22,7 @@ client.on('interactionCreate', async (interaction) => {
 
     if (interaction.commandName === 'playsound') {
         const folder = interaction.options.getString('folder');
-        const folders = ['Random', 'Complain'];
+        const folders = ['Random', 'British'];
 
         let soundDir;
 
