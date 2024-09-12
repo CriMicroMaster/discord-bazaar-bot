@@ -107,6 +107,9 @@ const slashRegister = async () => {
               .setDescription('The amount of gold to bet.')
               .setRequired(true)
               .setMinValue(1)), // Minimum bet of 1 gold
+        new SlashCommandBuilder()
+          .setName('playsound')
+          .setDescription('Play a sound!')
       ],
     });
 
