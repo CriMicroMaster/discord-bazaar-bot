@@ -7,7 +7,7 @@ const path = require('path');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
 
 // Set the bot token
-const token = 'YOUR_BOT_TOKEN'; // Replace with your bot's token
+const token = process.env.token; // Replace with your bot's token
 
 client.once('ready', () => {
     console.log('Soundboard bot is ready!');
