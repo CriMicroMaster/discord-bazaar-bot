@@ -110,7 +110,7 @@ const slashRegister = async () => {
         new SlashCommandBuilder()
           .setName('playsound')
           .setDescription('Play a random sound from the soundboard')
-          .addNumberOption(option => 
+          .addNumberOption(option =>
               option.setName('volume')
                   .setDescription('Volume of the sound (0.1 to 2)')
                   .setRequired(false)
@@ -123,7 +123,7 @@ const slashRegister = async () => {
                   .addChoices(
                       { name: 'Random', value: 'Random' },
                       { name: 'Complain', value: 'Complain' }
-                  ),
+                  ));
       ],
     });
 
