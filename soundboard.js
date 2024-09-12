@@ -32,7 +32,7 @@ client.on('interactionCreate', async (interaction) => {
             // Choose a random folder if none is specified
             soundDir = path.join(__dirname, 'Sounds', folders[Math.floor(Math.random() * folders.length)]);
         } else {
-            return interaction.reply({ content: 'Invalid folder specified. Use "Random" or "Complain".', ephemeral: true });
+            return interaction.reply({ content: 'Invalid folder specified. Use "Random" or "British".', ephemeral: true });
         }
 
         if (!fs.existsSync(soundDir)) {
