@@ -19,19 +19,6 @@ const client = new Client({
   ],
 });
 
-const { spawn } = require('child_process');
-
-// Function to start the soundboard script
-function startSoundboard() {
-    const soundboardProcess = spawn('node', ['soundboard.js'], {
-        stdio: 'inherit' // Pipe the stdout/stderr of soundboard.js to the console
-    });
-
-    soundboardProcess.on('close', (code) => {
-        console.log(`soundboard.js process exited with code ${code}`);
-    });
-}
-
 async function addXP(userId, amount) {
   const [wallet] = await Wallet.findOrCreate({
     where: { userId: userId },
@@ -839,9 +826,5 @@ setInterval(async () => {
     }
   }
 }, 60000);
-
-client.once('ready', () => {
-    startSoundboard(); // Start the soundboard as a separate process
-});
 
 client.login(process.env.token);
