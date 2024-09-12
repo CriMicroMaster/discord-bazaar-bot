@@ -21,6 +21,8 @@ client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
     if (interaction.commandName === 'playsound') {
+        const volume = interaction.options.getNumber("volume");
+        
         const channel = interaction.member.voice.channel;
         if (!channel) {
             return interaction.reply('You need to be in a voice channel to use this command!');
@@ -45,8 +47,6 @@ client.on('interactionCreate', async (interaction) => {
             inlineVolume: true // Enable volume control
         });
 
-        // Adjust volume (range: 0.0 to 2.0, where 1.0 is the original volume)
-        const volume = 2; // Adjust this value to increase the volume
         resource.volume.setVolume(volume);
         
         player.play(resource);
