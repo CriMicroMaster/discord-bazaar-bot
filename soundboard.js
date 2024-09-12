@@ -23,7 +23,7 @@ client.on('interactionCreate', async (interaction) => {
     if (interaction.commandName === 'playsound') {
         const channel = interaction.member.voice.channel;
         if (!channel) {
-            return interaction.reply('You need to be in a voice channel to use this command!');
+            return interaction.reply({ content: 'You need to be in a voice channel to use this command!', ephemeral: true });
         }
 
         // Get the volume option
@@ -62,7 +62,7 @@ client.on('interactionCreate', async (interaction) => {
             connection.destroy(); // Leave the channel after the sound is finished
         });
 
-        await interaction.reply(`Playing: **${randomSound}**`);
+        await interaction.reply({ content: `Playing: **${randomSound}**`, ephemeral: true });
     }
 });
 
