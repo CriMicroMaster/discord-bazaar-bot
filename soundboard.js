@@ -60,12 +60,6 @@ client.on('interactionCreate', async (interaction) => {
             return interaction.reply('Volume must be between 0.1 and 2.');
         }
 
-        // Get a random sound file from the 'Sounds' folder
-        const soundDir = path.join(__dirname, 'Sounds');
-        const soundFiles = fs.readdirSync(soundDir);
-        const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
-        const soundPath = path.join(soundDir, randomSound);
-
         // Join the voice channel
         const connection = joinVoiceChannel({
             channelId: channel.id,
