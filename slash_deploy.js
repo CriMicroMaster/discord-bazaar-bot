@@ -123,7 +123,7 @@ const slashRegister = async () => {
                   .addChoices(
                       { name: 'Random', value: 'Random' },
                       { name: 'Complain', value: 'Complain' }
-                  ));
+                  )),
       ],
     });
 
