@@ -2,6 +2,7 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerSta
 const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { VolumeTransformer } = require('prism-media');
 
 require('dotenv').config();
 
@@ -40,7 +41,14 @@ client.on('interactionCreate', async (interaction) => {
 
         // Create an audio player and play the random sound
         const player = createAudioPlayer();
-        const resource = createAudioResource(soundPath);
+        const resource = createAudioResource(soundPath, {
+            inlineVolume: true // Enable volume control
+        });
+
+        // Adjust volume (range: 0.0 to 2.0, where 1.0 is the original volume)
+        const volume = 2; // Adjust this value to increase the volume
+        resource.volume.setVolume(volume);
+        
         player.play(resource);
         connection.subscribe(player);
 
