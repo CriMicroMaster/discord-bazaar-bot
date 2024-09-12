@@ -21,6 +21,32 @@ client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
     if (interaction.commandName === 'playsound') {
+        const folder = interaction.options.getString('folder');
+        const folders = ['Random', 'Complain'];
+
+        let soundDir;
+
+        if (folders.includes(folder)) {
+            soundDir = path.join(__dirname, 'Sounds', folder);
+        } else if (!folder) {
+            // Choose a random folder if none is specified
+            soundDir = path.join(__dirname, 'Sounds', folders[Math.floor(Math.random() * folders.length)]);
+        } else {
+            return interaction.reply({ content: 'Invalid folder specified. Use "Random" or "Complain".', ephemeral: true });
+        }
+
+        if (!fs.existsSync(soundDir)) {
+            return interaction.reply({ content: 'The specified folder does not exist.', ephemeral: true });
+        }
+
+        // Get a random sound file from the chosen folder
+        const soundFiles = fs.readdirSync(soundDir);
+        if (soundFiles.length === 0) {
+            return interaction.reply({ content: 'No sound files found in the folder.', ephemeral: true });
+        }
+        const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
+        const soundPath = path.join(soundDir, randomSound);
+        
         const channel = interaction.member.voice.channel;
         if (!channel) {
             return interaction.reply({ content: 'You need to be in a voice channel to use this command!', ephemeral: true });
