@@ -268,6 +268,7 @@ client.on("interactionCreate", async (interaction) => {
       await interaction.reply({
         content: `${user.username}'s balance has been reset to 0.`,
         ephemeral: true,
+      });
     } else if (subcommand === "reset-warnings") {
       wallet.warnings = 0;
       await interaction.reply({
