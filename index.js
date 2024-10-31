@@ -89,11 +89,13 @@ async function warnUser(interaction, userId, warnedUser){
 
     // Send a direct message to the warned user
     await warnedUser.send(`⚠️ You have been warned! You now have ${wallet.warnings} warnings. Further warnings may lead to a mute, kick or even ban!`);
-  
-    await interaction.reply({
-      content: `✅ User <@${userId}> has been warned. They now have ${wallet.warnings} warnings.`,
-      ephemeral: true, // Only show to the user who invoked the command
-    });
+
+    if (interaction) {
+      await interaction.reply({
+        content: `✅ User <@${userId}> has been warned. They now have ${wallet.warnings} warnings.`,
+        ephemeral: true, 
+      });
+    }
     const logChannel = await client.channels.fetch(logChannelId);
         if (logChannel) {
           logChannel.send(
