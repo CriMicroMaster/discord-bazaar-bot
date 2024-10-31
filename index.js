@@ -190,6 +190,12 @@ async function checkWallets(guild) {
 
         if (wallet) {
           console.log(`Wallet created for user ${member.user.tag} (ID: ${member.id})`);
+          const logChannel = await client.channels.fetch(logChannelId);
+          if (logChannel) {
+            logChannel.send(
+              `**Wallet Creation**: Wallet created for user ${member.user.tag} (ID: ${member.id})`,
+            );
+          }
         }
       }
     }
