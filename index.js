@@ -143,39 +143,6 @@ const Wallet = sequelize.define("Wallet", {
   },
 });
 
-async function giveEveryoneGold(guild) {
-  try {
-    // Fetch all members in the guild
-    const members = await guild.members.fetch();
-
-    // Iterate through each member
-    for (const member of members.values()) {
-      const [wallet] = await Wallet.findOrCreate({
-        where: { userId: member.id },
-        defaults: {
-          gold: 0,
-          xp: 0,
-          level: 1,
-          lastDailyReward: null,
-          warnings: 0,
-        },
-      });
-
-      // Increase the gold amount
-      wallet.gold += 10000; // Give 10,000 gold
-
-      // Save the updated wallet
-      await wallet.save();
-
-      console.log(`Gave 10,000 gold to ${member.user.tag} (ID: ${member.id}).`);
-    }
-
-    console.log('Gold distribution completed.');
-  } catch (error) {
-    console.error('Error giving gold to members:', error);
-  }
-}
-
 // Synchronize the database
 async function syncDatabase() {
   try {
@@ -981,7 +948,6 @@ client.on("ready", (c) => {
   const guild = client.guilds.cache.get('1278098250330537994');
   if (guild) {
     checkWallets(guild); // Check wallets when the bot starts
-    giveEveryoneGold(guild);
   } else {
     console.error('Guild not found.');
   }
