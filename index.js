@@ -68,7 +68,7 @@ async function addXP(userId, amount) {
   return { leveledUp, level: wallet.level, xp: wallet.xp };
 }
 
-async function warnUser(userId, warnedUser){  
+async function warnUser(interaction, userId, warnedUser){  
   try {
     // Find the wallet for the user
     const [wallet] = await Wallet.findOrCreate({
@@ -87,8 +87,6 @@ async function warnUser(userId, warnedUser){
     // Save the updated wallet
     await wallet.save();
 
-    const member = await interaction.guild.members.fetch(userId);
-
     // Send a direct message to the warned user
     await warnedUser.send(`⚠️ You have been warned! You now have ${wallet.warnings} warnings. Further warnings may lead to a mute, kick or even ban!`);
   
@@ -99,7 +97,7 @@ async function warnUser(userId, warnedUser){
     const logChannel = await client.channels.fetch(logChannelId);
         if (logChannel) {
           logChannel.send(
-            `**Wallet Creation**: Wallet created for user ${member.user.tag} (ID: ${member.id})`,
+            `**Wallet Creation**: Wallet created for user ${userId.user.tag} (ID: ${userId.id})`,
           );
         }
   } catch (error) {
