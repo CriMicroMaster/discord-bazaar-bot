@@ -276,6 +276,7 @@ client.on("interactionCreate", async (interaction) => {
         ephemeral: true,
       });
     }
+    await wallet.save();
   }
 
   if (interaction.commandName === "give") {
