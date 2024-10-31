@@ -376,7 +376,7 @@ client.on("interactionCreate", async (interaction) => {
     const userId = interaction.options.getUser("user").id; // Get the user ID from command options
     const warnedUser = interaction.options.getUser("user"); // Get the User object
 
-    warnUser(userId, warnedUser);
+    warnUser(interaction, userId, warnedUser);
   }
 
 
@@ -1001,7 +1001,7 @@ client.on('messageCreate', async (message) => {
       
       const userId = message.author.id; // Get the user ID from command options
       const warnedUser = message.author; // Get the User object
-      warnUser(userId, warnedUser);
+      warnUser(null, userId, warnedUser);
 
       // Optionally log the incident
       const logChannel = await client.channels.fetch(logChannelId);
