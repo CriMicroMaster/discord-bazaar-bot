@@ -339,9 +339,9 @@ client.on("interactionCreate", async (interaction) => {
       // Save the updated wallet
       await wallet.save();
 
-      const member = await interaction.guild.members.fetch(userId);
+      const memberId = interaction.options.getUser("user")
       // Apply a 5-minute timeout
-      if (member.roles.highest.position < interaction.guild.me.roles.highest.position) {
+      if (memberId.roles.highest.position < interaction.guild.me.roles.highest.position) {
         const member = await interaction.guild.members.fetch(userId);
         await member.timeout(5 * 60 * 1000, `Received a warning. Total warnings: ${wallet.warnings}`); // Timeout for 5 minutes
       }
