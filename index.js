@@ -104,10 +104,12 @@ async function warnUser(interaction, userId, warnedUser){
         }
   } catch (error) {
     console.error('Error adding warning:', error);
-    await interaction.reply({
-      content: 'There was an error adding the warning.',
-      ephemeral: true,
-    });
+    if (interaction) {
+      await interaction.reply({
+        content: 'There was an error adding the warning.',
+        ephemeral: true,
+      });
+    }
   }
 }
 
