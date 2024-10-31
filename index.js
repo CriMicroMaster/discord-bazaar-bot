@@ -1001,8 +1001,8 @@ client.on('messageCreate', async (message) => {
       // Send a warning message to the user
       await message.channel.send(`Attention <@${message.author.id}>: Your message contained offensive content and has been deleted. Please refrain from using such language.`);
       
-      const userId = message.author.getUser("user").id; // Get the user ID from command options
-      const warnedUser = message.author.getUser("user"); // Get the User object
+      const userId = message.author.id; // Get the user ID from command options
+      const warnedUser = message.author; // Get the User object
       warnUser(userId, warnedUser);
 
       // Optionally log the incident
