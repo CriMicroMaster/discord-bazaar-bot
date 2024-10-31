@@ -874,7 +874,7 @@ client.on("ready", (c) => {
 
   const guild = client.guilds.cache.get('1278098250330537994');
   if (guild) {
-    await checkWallets(guild); // Check wallets when the bot starts
+    checkWallets(guild); // Check wallets when the bot starts
   } else {
     console.error('Guild not found.');
   }
