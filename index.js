@@ -10,7 +10,7 @@ const afkChannelId = "1281677190592725032";
 const targetChannelId = '1280899273759916206';
 
 // List of offensive words
-const offensiveWords = ["nigger", "niggers", "nigga", "kys", "kill yourself", "kill your self", "breng dech om", "bring dich um", "stirb", "bitch", "faggot", "fuck you", "feck dech", "fick dich"];
+const offensiveWords = ["nigger", "niggers", "nigga", "kys", "kill yourself", "kill your self", "breng dech om", "bring dich um", "stirb", "bitch", "faggot", "fuck you", "feck dech", "fick dich", "retard"];
 
 // Function to reset the monthly warnings
 async function resetMonthlyWarnings() {
