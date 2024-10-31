@@ -155,6 +155,36 @@ async function syncDatabase() {
 
 syncDatabase();
 
+// Function to check and create wallets for all users in the server
+async function checkWallets(guild) {
+  try {
+    // Fetch all members in the guild
+    const members = await guild.members.fetch();
+
+    // Iterate through each member
+    for (const member of members.values()) {
+      const [wallet] = await Wallet.findOrCreate({
+        where: { userId: member.id },
+        defaults: {
+          gold: 0,
+          xp: 0,
+          level: 1,
+          lastDailyReward: null,
+          warnings: 0,
+        },
+      });
+
+      if (wallet) {
+        console.log(`Wallet checked/created for user ${member.user.tag} (ID: ${member.id})`);
+      }
+    }
+
+    console.log('Wallet check/creation for all members completed.');
+  } catch (error) {
+    console.error('Error checking wallets for all members:', error);
+  }
+}
+
 const logChannelId = "1278356566999044169"; // Channel ID for logging
 const TRAVELING_MERCHANT_ROLE_ID = "1278408050478157854";
 
@@ -842,6 +872,15 @@ client.on("messageCreate", async (message) => {
 client.on("ready", (c) => {
   console.log(`${c.user.tag} is online.`);
 
+  await syncDatabase();
+
+  const guild = client.guilds.cache.get('1278098250330537994');
+  if (guild) {
+    await checkWallets(guild); // Check wallets when the bot starts
+  } else {
+    console.error('Guild not found.');
+  }
+  
   client.guilds.cache.forEach(guild => {
     guild.channels.cache.forEach(channel => {
       if (channel.type === 2) { // Check if the channel is a voice channel
