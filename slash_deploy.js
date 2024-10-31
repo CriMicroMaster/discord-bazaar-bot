@@ -124,6 +124,15 @@ const slashRegister = async () => {
                       { name: 'Random', value: 'Random' },
                       { name: 'British', value: 'British' }
                   )),
+        new SlashCommandBuilder()
+          .setName('warn')
+          .setDescription('Warn Admin Command')
+          .addUserOption((option) =>
+            option
+              .setName("user")
+              .setDescription("The user whose balance you want to check")
+              .setRequired(false),
+          ),
       ],
     });
 
