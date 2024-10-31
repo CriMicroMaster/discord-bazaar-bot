@@ -194,7 +194,6 @@ async function checkWallets(guild) {
       }
     }
 
-    console.log('Wallet check/creation for all members completed.');
   } catch (error) {
     console.error('Error checking wallets for all members:', error);
   }
