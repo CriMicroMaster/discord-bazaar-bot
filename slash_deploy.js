@@ -92,6 +92,15 @@ const slashRegister = async () => {
                   .setName("user")
                   .setDescription("The user to reset")
                   .setRequired(true))),
+          .addSubcommand(subcommand =>
+              subcommand
+                .setName("reset-warnings")
+                .setDescription("Reset warnings of an user")
+                .addUserOption(option =>
+                  option
+                    .setName("user")
+                    .setDescription("The user to reset")
+                    .setRequired(true))),
         new SlashCommandBuilder()
           .setName('stats')
           .setDescription('Displays your stats or the stats of a mentioned user.')
