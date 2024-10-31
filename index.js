@@ -191,16 +191,16 @@ client.on("interactionCreate", async (interaction) => {
         ephemeral: true,
       });
     }
-  
+
+    const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
+    
     if (subcommand === "add") {
-      const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
       wallet.gold += amount;
       await interaction.reply({
         content: `Added ${amount} gold to ${user.username}.`,
         ephemeral: true,
       });
     } else if (subcommand === "remove") {
-      const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
       if (wallet.gold >= amount) {
         wallet.gold -= amount;
         await interaction.reply({
@@ -208,61 +208,17 @@ client.on("interactionCreate", async (interaction) => {
           ephemeral: true,
         });
       } else {
-        const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
         await interaction.reply({
           content: `${user.username} doesn't have enough gold to remove that amount.`,
           ephemeral: true,
         });
       }
     } else if (subcommand === "reset") {
-      const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
       wallet.gold = 0;
       await interaction.reply({
         content: `${user.username}'s balance has been reset to 0.`,
         ephemeral: true,
       });
-    }
-    await wallet.save();
-
-    if (subcommand === "checkwarnings") {
-      try {
-        // Fetch all wallets
-        const wallets = await Wallet.findAll();
-    
-        // Initialize the warning list message
-        let warningList = "⚠️ **Warnings List** ⚠️\n";
-    
-        if (wallets.length === 0) {
-          warningList += "No warnings found.";
-        } else {
-          for (const wallet of wallets) {
-            // Check if userId is valid
-            if (wallet.userId) {
-              // Check if warnings is null and set it to 0 if it is
-              if (wallet.warnings === null) {
-                wallet.warnings = 0; // Set warnings to default value
-                await wallet.save(); // Save the changes to the database
-              }
-    
-              // Append user warnings to the warning list
-              warningList += `User <@${wallet.userId}> has ${wallet.warnings} warnings.\n`;
-            } else {
-              console.warn(`Wallet entry with null userId found:`, wallet);
-            }
-          }
-        }
-    
-        await interaction.reply({
-          content: warningList,
-          ephemeral: true, // Only show to the user who invoked the command
-        });
-      } catch (error) {
-        console.error('Error fetching warnings:', error);
-        await interaction.reply({
-          content: 'There was an error fetching the warning list.',
-          ephemeral: true,
-        });
-      }
     }
   }
 
