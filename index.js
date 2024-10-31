@@ -234,14 +234,19 @@ client.on("interactionCreate", async (interaction) => {
           warningList += "No warnings found.";
         } else {
           for (const wallet of wallets) {
-            // Check if warnings is null and set it to 0 if it is
-            if (wallet.warnings === null) {
-              wallet.warnings = 0; // Set warnings to default value
-              await wallet.save(); // Save the changes to the database
-            }
+            // Check if userId is valid
+            if (wallet.userId) {
+              // Check if warnings is null and set it to 0 if it is
+              if (wallet.warnings === null) {
+                wallet.warnings = 0; // Set warnings to default value
+                await wallet.save(); // Save the changes to the database
+              }
     
-            // Append user warnings to the warning list
-            warningList += `User <@${wallet.userId}> has ${wallet.warnings} warnings.\n`;
+              // Append user warnings to the warning list
+              warningList += `User <@${wallet.userId}> has ${wallet.warnings} warnings.\n`;
+            } else {
+              console.warn(`Wallet entry with null userId found:`, wallet);
+            }
           }
         }
     
