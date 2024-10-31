@@ -160,21 +160,39 @@ async function checkWallets(guild) {
     // Fetch all members in the guild
     const members = await guild.members.fetch();
 
+    // Get all user IDs from members
+    const memberIds = members.map(member => member.id);
+
+    // Fetch existing wallets for these user IDs
+    const existingWallets = await Wallet.findAll({
+      where: {
+        userId: memberIds,
+      },
+    });
+
+    // Create a Set of existing wallet user IDs for quick lookup
+    const existingWalletUserIds = new Set(existingWallets.map(wallet => wallet.userId));
+
     // Iterate through each member
     for (const member of members.values()) {
-      const [wallet] = await Wallet.findOrCreate({
-        where: { userId: member.id },
-        defaults: {
-          gold: 0,
-          xp: 0,
-          level: 1,
-          lastDailyReward: null,
-          warnings: 0,
-        },
-      });
+      // Check if the wallet already exists
+      if (!existingWalletUserIds.has(member.id)) {
+        const [wallet] = await Wallet.findOrCreate({
+          where: { userId: member.id },
+          defaults: {
+            gold: 0,
+            xp: 0,
+            level: 1,
+            lastDailyReward: null,
+            warnings: 0,
+          },
+        });
 
-      if (wallet) {
-        console.log(`Wallet checked/created for user ${member.user.tag} (ID: ${member.id})`);
+        if (wallet) {
+          console.log(`Wallet created for user ${member.user.tag} (ID: ${member.id})`);
+        }
+      } else {
+        console.log(`Wallet already exists for user ${member.user.tag} (ID: ${member.id})`);
       }
     }
 
