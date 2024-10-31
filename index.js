@@ -872,8 +872,6 @@ client.on("messageCreate", async (message) => {
 client.on("ready", (c) => {
   console.log(`${c.user.tag} is online.`);
 
-  await syncDatabase();
-
   const guild = client.guilds.cache.get('1278098250330537994');
   if (guild) {
     await checkWallets(guild); // Check wallets when the bot starts
