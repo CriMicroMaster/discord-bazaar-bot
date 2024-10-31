@@ -10,7 +10,7 @@ const afkChannelId = "1281677190592725032";
 const targetChannelId = '1280899273759916206';
 
 // List of offensive words
-const offensiveWords = ["nigger", "niggers"];
+const offensiveWords = ["nigger", "niggers", "nigga"];
 
 // Function to reset the monthly warnings
 async function resetMonthlyWarnings() {
@@ -1002,7 +1002,7 @@ client.on('messageCreate', async (message) => {
       // Optionally log the incident
       const logChannel = await client.channels.fetch(logChannelId);
       if (logChannel) {
-        logChannel.send(`⚠️ Offensive content detected from ${message.author.tag}: ${message.content}`);
+        logChannel.send(`**Offensive content** Detected from ${message.author.tag}: ${message.content}`);
       }
     } catch (error) {
       console.error('Error handling offensive message:', error);
