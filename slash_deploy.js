@@ -91,7 +91,7 @@ const slashRegister = async () => {
                 option
                   .setName("user")
                   .setDescription("The user to reset")
-                  .setRequired(true))),
+                  .setRequired(true)))
           .addSubcommand(subcommand =>
             subcommand
               .setName("warnings")
