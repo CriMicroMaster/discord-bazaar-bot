@@ -41,6 +41,49 @@ const client = new Client({
   ],
 });
 
+function warnUser(userId, warnedUser){  
+  try {
+    // Find the wallet for the user
+    const [wallet] = await Wallet.findOrCreate({
+      where: { userId: userId },
+      defaults: {
+        gold: 0,
+        xp: 0,
+        level: 1,
+        lastDailyReward: null,
+        warnings: 0,
+      },
+    });
+  
+    // Increase the warnings count
+    wallet.warnings += 1;
+    // Save the updated wallet
+    await wallet.save();
+
+    const member = await interaction.guild.members.fetch(userId);
+
+    // Send a direct message to the warned user
+    await warnedUser.send(`⚠️ You have been warned! You now have ${wallet.warnings} warnings. Further warnings may lead to a mute, kick or even ban!`);
+  
+    await interaction.reply({
+      content: `✅ User <@${userId}> has been warned. They now have ${wallet.warnings} warnings.`,
+      ephemeral: true, // Only show to the user who invoked the command
+    });
+    const logChannel = await client.channels.fetch(logChannelId);
+        if (logChannel) {
+          logChannel.send(
+            `**Wallet Creation**: Wallet created for user ${member.user.tag} (ID: ${member.id})`,
+          );
+        }
+  } catch (error) {
+    console.error('Error adding warning:', error);
+    await interaction.reply({
+      content: 'There was an error adding the warning.',
+      ephemeral: true,
+    });
+  }
+}
+
 function containsOffensiveWords(message) {
   const messageContent = message.content.toLowerCase();
   return offensiveWords.some(word => messageContent.includes(word));
@@ -334,48 +377,8 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "warn") {
     const userId = interaction.options.getUser("user").id; // Get the user ID from command options
     const warnedUser = interaction.options.getUser("user"); // Get the User object
-  
-    try {
-      // Find the wallet for the user
-      const [wallet] = await Wallet.findOrCreate({
-        where: { userId: userId },
-        defaults: {
-          gold: 0,
-          xp: 0,
-          level: 1,
-          lastDailyReward: null,
-          warnings: 0,
-        },
-      });
-  
-      // Increase the warnings count
-      wallet.warnings += 1;
-  
-      // Save the updated wallet
-      await wallet.save();
 
-      const member = await interaction.guild.members.fetch(userId);
-
-      // Send a direct message to the warned user
-      await warnedUser.send(`⚠️ You have been warned! You now have ${wallet.warnings} warnings. Further warnings may lead to a mute, kick or even ban!`);
-  
-      await interaction.reply({
-        content: `✅ User <@${userId}> has been warned. They now have ${wallet.warnings} warnings.`,
-        ephemeral: true, // Only show to the user who invoked the command
-      });
-      const logChannel = await client.channels.fetch(logChannelId);
-          if (logChannel) {
-            logChannel.send(
-              `**Wallet Creation**: Wallet created for user ${member.user.tag} (ID: ${member.id})`,
-            );
-          }
-    } catch (error) {
-      console.error('Error adding warning:', error);
-      await interaction.reply({
-        content: 'There was an error adding the warning.',
-        ephemeral: true,
-      });
-    }
+    warnUser(userId, warnedUser);
   }
 
 
@@ -997,6 +1000,10 @@ client.on('messageCreate', async (message) => {
 
       // Send a warning message to the user
       await message.channel.send(`Attention <@${message.author.id}>: Your message contained offensive content and has been deleted. Please refrain from using such language.`);
+      
+      const userId = message.author.options.getUser("user").id; // Get the user ID from command options
+      const warnedUser = message.author.options.getUser("user"); // Get the User object
+      warnUser(userId, warnedUser);
 
       // Optionally log the incident
       const logChannel = await client.channels.fetch(logChannelId);
