@@ -1,5 +1,6 @@
 const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors, PermissionsBitField, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 const { Sequelize, DataTypes, Op } = require("sequelize");
+const cron = require('node-cron');
 const slash_deploy = require("./slash_deploy.js")
 const keep_alive = require("./keep_alive.js");
 
@@ -7,6 +8,24 @@ require('dotenv').config();
 
 const afkChannelId = "1281677190592725032";
 const targetChannelId = '1280899273759916206';
+
+// Function to reset the monthly warnings
+async function resetMonthlyWarnings() {
+  try {
+    await Wallet.update({ warnings: 0 }, {
+      where: {}, 
+    });
+    console.log('All warning counts have been reset for the month.');
+  } catch (error) {
+    console.error('Error resetting warning counts:', error);
+  }
+}
+
+// Schedule the reset to run at midnight on the first day of every month
+cron.schedule('0 0 1 * *', () => {
+  console.log('Running monthly warning reset...');
+  resetMonthlyWarnings();
+});
 
 // Initialize the Discord client
 const client = new Client({
@@ -117,10 +136,25 @@ const Wallet = sequelize.define("Wallet", {
     type: DataTypes.DATE,
     allowNull: true,
   },
+  warnings: {  
+    type: DataTypes.INTEGER,
+    defaultValue: 0, 
+    allowNull: false,
+  }, {
+  timestamps: true,
 });
 
 // Synchronize the database
-sequelize.sync();
+async function syncDatabase() {
+  try {
+    await sequelize.sync();
+    console.log('Database synchronized successfully.');
+  } catch (error) {
+    console.error('Error synchronizing the database:', error);
+  }
+}
+
+syncDatabase();
 
 const logChannelId = "1278356566999044169"; // Channel ID for logging
 const TRAVELING_MERCHANT_ROLE_ID = "1278408050478157854";
