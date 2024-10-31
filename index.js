@@ -152,7 +152,6 @@ async function syncDatabase() {
     console.error('Error synchronizing the database:', error);
   }
 }
-
 syncDatabase();
 
 // Function to check and create wallets for all users in the server
