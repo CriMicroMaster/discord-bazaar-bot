@@ -997,7 +997,7 @@ client.on('messageCreate', async (message) => {
       await message.delete();
 
       // Send a warning message to the user
-      await message.author.send(`⚠️ Your message contained offensive content and has been deleted. Please refrain from using such language.`);
+      await message.channel.send(`Attention <@${message.author.id}>: Your message contained offensive content and has been deleted. Please refrain from using such language.`);
 
       // Optionally log the incident
       const logChannel = await client.channels.fetch(logChannelId);
