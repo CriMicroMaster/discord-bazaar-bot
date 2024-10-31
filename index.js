@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors, PermissionsBitField, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
+const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors, PermissionsBitField, ButtonBuilder, ButtonStyle, ActionRowBuilder, Time } = require("discord.js");
 const { Sequelize, DataTypes, Op } = require("sequelize");
 const cron = require('node-cron');
 const slash_deploy = require("./slash_deploy.js")
@@ -340,8 +340,9 @@ client.on("interactionCreate", async (interaction) => {
       await wallet.save();
       
       // Apply a 5-minute timeout
-      const member = await interaction.guild.members.fetch(userId);
-      await member.timeout(5 * 60 * 1000, `Received a warning. Total warnings: ${wallet.warnings}`); // Timeout for 5 minutes
+      if (member.roles.highest.position < interaction.guild.me.roles.highest.position) {
+        const member = await interaction.guild.members.fetch(userId);
+        await member.timeout(5 * 60 * 1000, `Received a warning. Total warnings: ${wallet.warnings}`); // Timeout for 5 minutes
       
       // Send a direct message to the warned user
       await warnedUser.send(`⚠️ You have been warned! You now have ${wallet.warnings} warnings. Further warnings may lead to a mute, kick or even ban!`);
