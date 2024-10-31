@@ -9,6 +9,9 @@ require('dotenv').config();
 const afkChannelId = "1281677190592725032";
 const targetChannelId = '1280899273759916206';
 
+// List of offensive words
+const offensiveWords = ["nigger", "niggers"];
+
 // Function to reset the monthly warnings
 async function resetMonthlyWarnings() {
   try {
@@ -37,6 +40,11 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,
   ],
 });
+
+function containsOffensiveWords(message) {
+  const messageContent = message.content.toLowerCase();
+  return offensiveWords.some(word => messageContent.includes(word));
+}
 
 async function addXP(userId, amount) {
   const [wallet] = await Wallet.findOrCreate({
@@ -976,6 +984,31 @@ client.on("ready", (c) => {
       }
     });
   });
+
+  // Event listener for message creation
+client.on('messageCreate', async (message) => {
+  // Ignore messages from bots
+  if (message.author.bot) return;
+
+  // Check if the message contains offensive words
+  if (containsOffensiveWords(message)) {
+    try {
+      // Delete the offending message
+      await message.delete();
+
+      // Send a warning message to the user
+      await message.author.send(`⚠️ Your message contained offensive content and has been deleted. Please refrain from using such language.`);
+
+      // Optionally log the incident
+      const logChannel = await client.channels.fetch(logChannelId);
+      if (logChannel) {
+        logChannel.send(`⚠️ Offensive content detected from ${message.author.tag}: ${message.content}`);
+      }
+    } catch (error) {
+      console.error('Error handling offensive message:', error);
+    }
+  }
+});
   
   // Function to update the bot's activity based on the time
   const updateActivity = () => {
