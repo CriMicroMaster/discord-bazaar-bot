@@ -1002,7 +1002,7 @@ client.on('messageCreate', async (message) => {
       // Optionally log the incident
       const logChannel = await client.channels.fetch(logChannelId);
       if (logChannel) {
-        logChannel.send(`**Offensive content** Detected from ${message.author.tag}: ${message.content}`);
+        logChannel.send(`**Offensive content** Detected from ${message.author.tag}`);
       }
     } catch (error) {
       console.error('Error handling offensive message:', error);
