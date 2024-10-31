@@ -192,15 +192,15 @@ client.on("interactionCreate", async (interaction) => {
       });
     }
   
-    const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
-  
     if (subcommand === "add") {
+      const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
       wallet.gold += amount;
       await interaction.reply({
         content: `Added ${amount} gold to ${user.username}.`,
         ephemeral: true,
       });
     } else if (subcommand === "remove") {
+      const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
       if (wallet.gold >= amount) {
         wallet.gold -= amount;
         await interaction.reply({
@@ -208,12 +208,14 @@ client.on("interactionCreate", async (interaction) => {
           ephemeral: true,
         });
       } else {
+        const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
         await interaction.reply({
           content: `${user.username} doesn't have enough gold to remove that amount.`,
           ephemeral: true,
         });
       }
     } else if (subcommand === "reset") {
+      const [wallet] = await Wallet.findOrCreate({ where: { userId: user.id } });
       wallet.gold = 0;
       await interaction.reply({
         content: `${user.username}'s balance has been reset to 0.`,
