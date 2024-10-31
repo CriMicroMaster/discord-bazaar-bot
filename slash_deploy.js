@@ -136,7 +136,6 @@ const slashRegister = async () => {
         new SlashCommandBuilder()
           .setName('check-warnings')
           .setDescription('Admin Command - Check warnings leaderboard'),
-        ),
       ],
     });
 
