@@ -220,8 +220,36 @@ client.on("interactionCreate", async (interaction) => {
         ephemeral: true,
       });
     }
-  
     await wallet.save();
+
+    if (subcommand === "checkwarnings") {
+      try {
+        // Fetch all wallets with warnings
+        const wallets = await Wallet.findAll();
+    
+        // Build the response message
+        let warningList = "⚠️ **Warnings List** ⚠️\n";
+    
+        if (wallets.length === 0) {
+          warningList += "No warnings found.";
+        } else {
+          wallets.forEach(wallet => {
+            warningList += `User <@${wallet.userId}> has ${wallet.warnings} warnings.\n`;
+          });
+        }
+    
+        await interaction.reply({
+          content: warningList,
+          ephemeral: true, // Only show to the user who invoked the command
+        });
+      } catch (error) {
+        console.error('Error fetching warnings:', error);
+        await interaction.reply({
+          content: 'There was an error fetching the warning list.',
+          ephemeral: true,
+        });
+      }
+    }
   }
 
   if (interaction.commandName === "give") {
