@@ -224,18 +224,25 @@ client.on("interactionCreate", async (interaction) => {
 
     if (subcommand === "checkwarnings") {
       try {
-        // Fetch all wallets with warnings
+        // Fetch all wallets
         const wallets = await Wallet.findAll();
     
-        // Build the response message
+        // Initialize the warning list message
         let warningList = "⚠️ **Warnings List** ⚠️\n";
     
         if (wallets.length === 0) {
           warningList += "No warnings found.";
         } else {
-          wallets.forEach(wallet => {
+          for (const wallet of wallets) {
+            // Check if warnings is null and set it to 0 if it is
+            if (wallet.warnings === null) {
+              wallet.warnings = 0; // Set warnings to default value
+              await wallet.save(); // Save the changes to the database
+            }
+    
+            // Append user warnings to the warning list
             warningList += `User <@${wallet.userId}> has ${wallet.warnings} warnings.\n`;
-          });
+          }
         }
     
         await interaction.reply({
