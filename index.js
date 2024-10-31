@@ -41,7 +41,34 @@ const client = new Client({
   ],
 });
 
-function warnUser(userId, warnedUser){  
+function containsOffensiveWords(message) {
+  const messageContent = message.content.toLowerCase();
+  return offensiveWords.some(word => messageContent.includes(word));
+}
+
+async function addXP(userId, amount) {
+  const [wallet] = await Wallet.findOrCreate({
+    where: { userId: userId },
+  });
+  
+  wallet.xp += amount;
+
+  const levelUpThreshold = 100; // XP required to level up
+  let leveledUp = false;
+
+  // Check if user should level up
+  while (wallet.xp >= wallet.level * levelUpThreshold) {
+    wallet.xp -= wallet.level * levelUpThreshold;
+    wallet.level += 1;
+    leveledUp = true;
+  }
+
+  await wallet.save();
+
+  return { leveledUp, level: wallet.level, xp: wallet.xp };
+}
+
+async function warnUser(userId, warnedUser){  
   try {
     // Find the wallet for the user
     const [wallet] = await Wallet.findOrCreate({
@@ -82,33 +109,6 @@ function warnUser(userId, warnedUser){
       ephemeral: true,
     });
   }
-}
-
-function containsOffensiveWords(message) {
-  const messageContent = message.content.toLowerCase();
-  return offensiveWords.some(word => messageContent.includes(word));
-}
-
-async function addXP(userId, amount) {
-  const [wallet] = await Wallet.findOrCreate({
-    where: { userId: userId },
-  });
-  
-  wallet.xp += amount;
-
-  const levelUpThreshold = 100; // XP required to level up
-  let leveledUp = false;
-
-  // Check if user should level up
-  while (wallet.xp >= wallet.level * levelUpThreshold) {
-    wallet.xp -= wallet.level * levelUpThreshold;
-    wallet.level += 1;
-    leveledUp = true;
-  }
-
-  await wallet.save();
-
-  return { leveledUp, level: wallet.level, xp: wallet.xp };
 }
 
 function getRandomCard() {
