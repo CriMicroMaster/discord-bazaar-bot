@@ -316,6 +316,46 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
 
+  if (subcommand === "warn") {
+    const userId = interaction.options.getUser("user").id; // Get the user ID from command options
+    const warnedUser = interaction.options.getUser("user"); // Get the User object
+  
+    try {
+      // Find the wallet for the user
+      const [wallet] = await Wallet.findOrCreate({
+        where: { userId: userId },
+        defaults: {
+          gold: 0,
+          xp: 0,
+          level: 1,
+          lastDailyReward: null,
+          warnings: 0,
+        },
+      });
+  
+      // Increase the warnings count
+      wallet.warnings += 1;
+  
+      // Save the updated wallet
+      await wallet.save();
+  
+      // Send a direct message to the warned user
+      await warnedUser.send(`⚠️ You have been warned! You now have ${wallet.warnings} warnings. Further warnings may lead to a mute, kick or even ban!`);
+  
+      await interaction.reply({
+        content: `✅ User <@${userId}> has been warned. They now have ${wallet.warnings} warnings.`,
+        ephemeral: true, // Only show to the user who invoked the command
+      });
+    } catch (error) {
+      console.error('Error adding warning:', error);
+      await interaction.reply({
+        content: 'There was an error adding the warning.',
+        ephemeral: true,
+      });
+    }
+  }
+
+
   if (interaction.commandName === "checkwarnings") {
     try {
       // Fetch all wallets
