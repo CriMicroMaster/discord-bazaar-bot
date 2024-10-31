@@ -92,10 +92,6 @@ const slashRegister = async () => {
                   .setName("user")
                   .setDescription("The user to reset")
                   .setRequired(true)))
-          .addSubcommand(subcommand =>
-            subcommand
-              .setName("warnings")
-              .setDescription("Add gold to a user's balance")),
         new SlashCommandBuilder()
           .setName('stats')
           .setDescription('Displays your stats or the stats of a mentioned user.')
@@ -137,6 +133,10 @@ const slashRegister = async () => {
               .setDescription("The user whose balance you want to check")
               .setRequired(false),
           ),
+        new SlashCommandBuilder()
+          .setName('check-warnings')
+          .setDescription('Admin Command - Check warnings leaderboard'),
+        ),
       ],
     });
 
