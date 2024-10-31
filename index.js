@@ -140,7 +140,7 @@ const Wallet = sequelize.define("Wallet", {
     type: DataTypes.INTEGER,
     defaultValue: 0, 
     allowNull: false,
-  },
+  }
 });
 
 // Synchronize the database
