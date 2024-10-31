@@ -99,7 +99,7 @@ async function warnUser(interaction, userId, warnedUser){
     const logChannel = await client.channels.fetch(logChannelId);
         if (logChannel) {
           logChannel.send(
-            `**Wallet Creation**: Wallet created for user ${userId.user.tag} (ID: ${userId.id})`,
+            `**Wallet Creation**: Wallet created for user ${userId.user} (ID: ${userId.id})`,
           );
         }
   } catch (error) {
