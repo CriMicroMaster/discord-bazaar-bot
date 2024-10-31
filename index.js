@@ -338,7 +338,8 @@ client.on("interactionCreate", async (interaction) => {
   
       // Save the updated wallet
       await wallet.save();
-      
+
+      const member = await interaction.guild.members.fetch(userId);
       // Apply a 5-minute timeout
       if (member.roles.highest.position < interaction.guild.me.roles.highest.position) {
         const member = await interaction.guild.members.fetch(userId);
