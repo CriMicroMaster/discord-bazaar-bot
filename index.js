@@ -338,12 +338,11 @@ client.on("interactionCreate", async (interaction) => {
   
       // Save the updated wallet
       await wallet.save();
-
-      if (wallet.warnings === 1) {
-        // Apply a 5-minute timeout for the first warning
-        const member = await interaction.guild.members.fetch(userId);
-        await member.timeout(5 * 60 * 1000, `Received a warning. Total warnings: ${wallet.warnings}`); // Timeout for 5 minutes
-      }
+      
+      // Apply a 5-minute timeout
+      const member = await interaction.guild.members.fetch(userId);
+      await member.timeout(5 * 60 * 1000, `Received a warning. Total warnings: ${wallet.warnings}`); // Timeout for 5 minutes
+      
       // Send a direct message to the warned user
       await warnedUser.send(`⚠️ You have been warned! You now have ${wallet.warnings} warnings. Further warnings may lead to a mute, kick or even ban!`);
   
