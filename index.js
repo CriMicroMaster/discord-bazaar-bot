@@ -191,8 +191,6 @@ async function checkWallets(guild) {
         if (wallet) {
           console.log(`Wallet created for user ${member.user.tag} (ID: ${member.id})`);
         }
-      } else {
-        console.log(`Wallet already exists for user ${member.user.tag} (ID: ${member.id})`);
       }
     }
 
