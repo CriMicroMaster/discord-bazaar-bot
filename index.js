@@ -316,7 +316,7 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
 
-  if (subcommand === "warn") {
+  if (interaction.commandName === "warn") {
     const userId = interaction.options.getUser("user").id; // Get the user ID from command options
     const warnedUser = interaction.options.getUser("user"); // Get the User object
   
