@@ -95,7 +95,7 @@ const slashRegister = async () => {
           .addSubcommand(subcommand =>
             subcommand
               .setName("warnings")
-              .setDescription("Add gold to a user's balance"),
+              .setDescription("Add gold to a user's balance")
         new SlashCommandBuilder()
           .setName('stats')
           .setDescription('Displays your stats or the stats of a mentioned user.')
