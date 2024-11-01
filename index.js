@@ -1,6 +1,5 @@
 const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors, PermissionsBitField, ButtonBuilder, ButtonStyle, ActionRowBuilder, Time } = require("discord.js");
 const { Sequelize, DataTypes, Op } = require("sequelize");
-const cron = require('node-cron');
 const slash_deploy = require("./slash_deploy.js")
 const keep_alive = require("./keep_alive.js");
 
@@ -8,27 +7,6 @@ require('dotenv').config();
 
 const afkChannelId = "1281677190592725032";
 const targetChannelId = '1280899273759916206';
-
-// List of offensive words
-const offensiveWords = ["nigger", "niggers", "nigga", "kys", "kill yourself", "kill your self", "breng dech om", "bring dich um", "stirb", "bitch", "faggot", "fuck you", "feck dech", "fick dich", "retard", "nega", "n1gger"];
-
-// Function to reset the monthly warnings
-async function resetMonthlyWarnings() {
-  try {
-    await Wallet.update({ warnings: 0 }, {
-      where: {}, 
-    });
-    console.log('All warning counts have been reset for the month.');
-  } catch (error) {
-    console.error('Error resetting warning counts:', error);
-  }
-}
-
-// Schedule the reset to run at midnight on the first day of every month
-cron.schedule('0 0 1 * *', () => {
-  console.log('Running monthly warning reset...');
-  resetMonthlyWarnings();
-});
 
 // Initialize the Discord client
 const client = new Client({
@@ -40,11 +18,6 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,
   ],
 });
-
-function containsOffensiveWords(message) {
-  const messageContent = message.content.toLowerCase();
-  return offensiveWords.some(word => messageContent.includes(word));
-}
 
 async function addXP(userId, amount) {
   const [wallet] = await Wallet.findOrCreate({
@@ -66,51 +39,6 @@ async function addXP(userId, amount) {
   await wallet.save();
 
   return { leveledUp, level: wallet.level, xp: wallet.xp };
-}
-
-async function warnUser(interaction, userId, warnedUser){  
-  try {
-    // Find the wallet for the user
-    const [wallet] = await Wallet.findOrCreate({
-      where: { userId: userId },
-      defaults: {
-        gold: 0,
-        xp: 0,
-        level: 1,
-        lastDailyReward: null,
-        warnings: 0,
-      },
-    });
-  
-    // Increase the warnings count
-    wallet.warnings += 1;
-    // Save the updated wallet
-    await wallet.save();
-
-    // Send a direct message to the warned user
-    await warnedUser.send(`⚠️ You have been warned! You now have ${wallet.warnings} warnings. Further warnings may lead to a mute, kick or even ban!`);
-
-    if (interaction) {
-      await interaction.reply({
-        content: `✅ User <@${userId}> has been warned. They now have ${wallet.warnings} warnings.`,
-        ephemeral: true, 
-      });
-    }
-    const logChannel = await client.channels.fetch(logChannelId);
-        if (logChannel) {
-          logChannel.send(
-            `**Wallet Creation**: Wallet created for user ${userId.user} (ID: ${userId.id})`,
-          );
-        }
-  } catch (error) {
-    console.error('Error adding warning:', error);
-    if (interaction) {
-      await interaction.reply({
-        content: 'There was an error adding the warning.',
-        ephemeral: true,
-      });
-    }
-  }
 }
 
 function getRandomCard() {
@@ -380,7 +308,46 @@ client.on("interactionCreate", async (interaction) => {
     const userId = interaction.options.getUser("user").id; // Get the user ID from command options
     const warnedUser = interaction.options.getUser("user"); // Get the User object
 
-    warnUser(interaction, userId, warnedUser);
+    try {
+      // Find the wallet for the user
+      const [wallet] = await Wallet.findOrCreate({
+        where: { userId: userId },
+        defaults: {
+          gold: 0,
+          xp: 0,
+          level: 1,
+          lastDailyReward: null,
+          warnings: 0,
+        },
+      });
+    
+      // Increase the warnings count
+      wallet.warnings += 1;
+      // Save the updated wallet
+      await wallet.save();
+  
+      // Send a direct message to the warned user
+      await warnedUser.send(`⚠️ You have been warned! You now have ${wallet.warnings} warnings. Further warnings may lead to a mute, kick or even ban!`);
+  
+      await interaction.reply({
+        content: `✅ User <@${userId}> has been warned. They now have ${wallet.warnings} warnings.`,
+        ephemeral: true, 
+      });
+      const logChannel = await client.channels.fetch(logChannelId);
+          if (logChannel) {
+            logChannel.send(
+              `**Wallet Creation**: Wallet created for user ${userId.user} (ID: ${userId.id})`,
+            );
+          }
+        
+      } catch (error) {
+        console.error('Error adding warning:', error);
+    
+        await interaction.reply({
+          content: 'There was an error adding the warning.',
+          ephemeral: true,
+        });
+      }
   }
 
 
@@ -988,35 +955,6 @@ client.on("ready", (c) => {
       }
     });
   });
-
-  // Event listener for message creation
-client.on('messageCreate', async (message) => {
-  // Ignore messages from bots
-  if (message.author.bot) return;
-
-  // Check if the message contains offensive words
-  if (containsOffensiveWords(message)) {
-    try {
-      // Delete the offending message
-      await message.delete();
-
-      // Send a warning message to the user
-      await message.channel.send(`Attention <@${message.author.id}>: Your message contained offensive content and has been deleted. Please refrain from using such language.`);
-      
-      const userId = message.author.id; // Get the user ID from command options
-      const warnedUser = message.author; // Get the User object
-      warnUser(null, userId, warnedUser);
-
-      // Optionally log the incident
-      const logChannel = await client.channels.fetch(logChannelId);
-      if (logChannel) {
-        logChannel.send(`**Offensive content** Detected from ${message.author.tag}`);
-      }
-    } catch (error) {
-      console.error('Error handling offensive message:', error);
-    }
-  }
-});
   
   // Function to update the bot's activity based on the time
   const updateActivity = () => {
