@@ -145,6 +145,15 @@ const slashRegister = async () => {
         new SlashCommandBuilder()
           .setName('checkwarnings')
           .setDescription('Admin Command - Check warnings leaderboard'),
+        new SlashCommandBuilder()
+          .setName('write')
+          .setDescription('Write Admin Command')
+          .addUserOption((option) =>
+            option
+              .setName("message")
+              .setDescription("The message the bot should write.")
+              .setRequired(true),
+          ),
       ],
     });
 
