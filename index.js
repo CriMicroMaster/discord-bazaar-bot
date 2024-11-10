@@ -350,6 +350,14 @@ client.on("interactionCreate", async (interaction) => {
       }
   }
 
+  if (interaction.commandName === 'write') {
+      const message = interaction.options.getString('message'); 
+      if (message) {
+          await interaction.reply(message);
+      } else {
+          await interaction.reply('Please provide a message to send.');
+      }
+  }
 
   if (interaction.commandName === "checkwarnings") {
     try {
