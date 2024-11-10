@@ -148,7 +148,7 @@ const slashRegister = async () => {
         new SlashCommandBuilder()
           .setName('write')
           .setDescription('Write Admin Command')
-          .addUserOption((option) =>
+          .addStringOption((option) =>
             option
               .setName("message")
               .setDescription("The message the bot should write.")
