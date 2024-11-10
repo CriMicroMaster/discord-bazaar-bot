@@ -351,11 +351,13 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.commandName === 'write') {
-      const message = interaction.options.getString('message'); 
+      const message = interaction.options.getString('message');
       if (message) {
-          await interaction.reply(message);
+          await interaction.deferReply({ ephemeral: true }); // Hide user message
+          await interaction.deleteReply(); // Deletes user response after sending
+          await interaction.channel.send(message); // Sends the message directly in the channel
       } else {
-          await interaction.reply('Please provide a message to send.');
+          await interaction.reply({ content: 'Please provide a message to send.', ephemeral: true });
       }
   }
 
