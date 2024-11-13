@@ -5,14 +5,14 @@ const keep_alive = require("./keep_alive.js");
 
 require('dotenv').config();
 
-const afkChannelId = "1281677190592725032";
+const afkChannelId = '1281677190592725032';
 const targetChannelId = '1280899273759916206';
 
-let roleMessageId = 1306240397831442505;
+let roleMessageId = '1306240397831442505';
 
 const roleAssignments = {
-    '🛒': '1306232809215496194',  // Replace 'ROLE_ID_1' with the actual ID of the first role
-    '📺': '1306232968888586322'  // Replace 'ROLE_ID_2' with the actual ID of the second role
+    '🛒': '1306232809215496194',
+    '📺': '1306232968888586322'
 };
 
 // Initialize the Discord client
@@ -1001,9 +1001,9 @@ client.on("ready", (c) => {
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
-    console.log("Added");
     if (user.bot) return;
 
+    console.log("Added");
     // Only process reactions on the specific message
     if (reaction.message.id !== roleMessageId) return;
     
