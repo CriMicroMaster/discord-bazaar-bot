@@ -997,8 +997,6 @@ client.on("ready", (c) => {
 
   // Set interval to check and update the activity every 15 minutes
   setInterval(updateActivity, 15 * 60 * 1000); // 15 minutes
-
-  sendRoleAssignmentMessage();
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
