@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors, PermissionsBitField, ButtonBuilder, ButtonStyle, ActionRowBuilder, Time, Events } = require("discord.js");
+const { Client, GatewayIntentBits, ActivityType, EmbedBuilder, Colors, PermissionsBitField, ButtonBuilder, ButtonStyle, ActionRowBuilder, Time, Events, Partials } = require("discord.js");
 const { Sequelize, DataTypes, Op } = require("sequelize");
 const slash_deploy = require("./slash_deploy.js")
 const keep_alive = require("./keep_alive.js");
@@ -24,6 +24,11 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildMessageReactions,
+  ],
+  partials: [
+    Partials.Message,
+    Partials.Channel,
+    Partials.Reaction
   ],
 });
 
@@ -1000,7 +1005,7 @@ client.on("ready", (c) => {
   setInterval(updateActivity, 15 * 60 * 1000); // 15 minutes
 });
 
-client.on(Events.MessageReactionAdd, async (reaction, user) => {
+client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
 
     console.log("Added");
