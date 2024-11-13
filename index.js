@@ -225,7 +225,7 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === 'edit') {
         const messageId = interaction.options.getString('message_id');
-        const newContent = interaction.options.getString('new_message');
+        const newContent = interaction.options.getString('edited_message');
 
         // Check if both fields are provided
         if (!messageId || !newContent) {
