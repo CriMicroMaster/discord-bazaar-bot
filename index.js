@@ -1001,7 +1001,7 @@ client.on("ready", (c) => {
 async function sendRoleAssignmentMessage() {
     // Send the role assignment message in a specific channel
     const channel = client.channels.cache.get('1306232193009451099'); // Replace with your channel ID
-    const roleMessage = channel.send(
+    const roleMessage = await channel.send(
         "React to this message to assign yourself a role:\n\n" +
         "🛒 - Shopping Reco\n" +
         "📺 - Animanga Reco\n" 
@@ -1009,7 +1009,7 @@ async function sendRoleAssignmentMessage() {
     
     // React with the emojis for each role
     for (const emoji of Object.keys(roleAssignments)) {
-        roleMessage.react(emoji);
+        await roleMessage.react(emoji);
     }
 }
 setInterval(async () => {
