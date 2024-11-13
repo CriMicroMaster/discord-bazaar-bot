@@ -229,7 +229,7 @@ client.on("interactionCreate", async (interaction) => {
 
         // Check if both fields are provided
         if (!messageId || !newContent) {
-            return interaction.reply('Please provide both a message ID and the new content.');
+            return;
         }
 
         try {
