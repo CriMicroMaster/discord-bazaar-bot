@@ -8,7 +8,7 @@ require('dotenv').config();
 const afkChannelId = "1281677190592725032";
 const targetChannelId = '1280899273759916206';
 
-let roleMessageId = 0;
+let roleMessageId = 1306240397831442505;
 
 const roleAssignments = {
     '🛒': '1306232809215496194',  // Replace 'ROLE_ID_1' with the actual ID of the first role
@@ -1000,28 +1000,6 @@ client.on("ready", (c) => {
 
   sendRoleAssignmentMessage();
 });
-
-async function sendRoleAssignmentMessage() {
-    // Send the role assignment message in a specific channel
-    const channel = client.channels.cache.get('1306232193009451099'); // Replace with your channel ID
-    if (!channel) return console.error("Channel not found");
-    try {
-        const roleMessage = await channel.send(
-            "React to this message to assign yourself a role:\n\n" +
-            "🛒 - Shopping Reco\n" +
-            "📺 - Animanga Reco\n"
-        );
-
-        // Store the message ID to use for filtering reactions
-        roleMessageId = roleMessage.id;
-
-        for (const emoji of Object.keys(roleAssignments)) {
-            await roleMessage.react(emoji);
-        }
-    } catch (error) {
-        console.error("Failed to send role assignment message:", error);
-    }
-}
 
 client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
