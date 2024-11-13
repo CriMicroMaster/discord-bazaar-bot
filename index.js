@@ -13,7 +13,7 @@ let roleMessageId = '1306261565116387382';
 const roleAssignments = {
     '🛒': '1306232809215496194',
     '📺': '1306232968888586322',
-    '1301946370453671979': '1305988964104142890',
+    '<:umactually:1301946370453671979>': '1305988964104142890',
 };
 
 // Initialize the Discord client
@@ -1012,7 +1012,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     // Only process reactions on the specific message
     if (reaction.message.id !== roleMessageId) return;
     
-    const roleId = roleAssignments[reaction.emoji.name];
+    const roleId = roleAssignments[reaction.emoji.name] || roleAssignments[`<:${reaction.emoji.name}:${reaction.emoji.id}>`];
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
         const role = reaction.message.guild.roles.cache.get(roleId);
@@ -1027,7 +1027,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
     // Only process reactions on the specific message
     if (reaction.message.id !== roleMessageId) return;
     
-    const roleId = roleAssignments[reaction.emoji.name];
+    const roleId = roleAssignments[reaction.emoji.name] || roleAssignments[`<:${reaction.emoji.name}:${reaction.emoji.id}>`];
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
         const role = reaction.message.guild.roles.cache.get(roleId);
