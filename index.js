@@ -1021,7 +1021,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
         await member.roles.add(roleId);
-        user.send(`You have been assigned the role!`).catch(console.error);
+        console.log("Assigned Role")
     }
 });
 
@@ -1032,7 +1032,6 @@ client.on('messageReactionRemove', async (reaction, user) => {
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
         await member.roles.remove(roleId);
-        user.send(`The role has been removed.`).catch(console.error);
     }
 });
 
