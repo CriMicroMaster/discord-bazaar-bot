@@ -1041,6 +1041,13 @@ client.on('messageReactionAdd', async (reaction, user) => {
         const role = reaction.message.guild.roles.cache.get(roleId);
         await member.roles.add(roleId);
         console.log(`Assigned role "${role.name}" to ${user.tag}`);
+        // Log the transaction to the specified channel
+        const logChannel = await client.channels.fetch(logChannelId);
+        if (logChannel) {
+            logChannel.send(
+                `**Assigned role**: "${role.name}" to ${user.tag}`,
+            );
+        }
     }
 });
 
@@ -1056,6 +1063,13 @@ client.on('messageReactionRemove', async (reaction, user) => {
         const role = reaction.message.guild.roles.cache.get(roleId);
         await member.roles.remove(roleId);
         console.log(`Unassigned role "${role.name}" from ${user.tag}`);
+        // Log the transaction to the specified channel
+        const logChannel = await client.channels.fetch(logChannelId);
+        if (logChannel) {
+            logChannel.send(
+                `**Unassigned role**: "${role.name}" to ${user.tag}`,
+            );
+        }
     }
 });
 
