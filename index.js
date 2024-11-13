@@ -13,7 +13,7 @@ let roleMessageId = '1306261565116387382';
 const roleAssignments = {
     '🛒': '1306232809215496194',
     '📺': '1306232968888586322',
-    ':umactually:': '1305988964104142890',
+    '<:umactually:>': '1305988964104142890',
 };
 
 // Initialize the Discord client
