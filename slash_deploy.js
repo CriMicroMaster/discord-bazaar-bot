@@ -162,7 +162,7 @@ const slashRegister = async () => {
               .setName("messageId")
               .setDescription("Message Id to edit.")
               .setRequired(true),
-          ),
+          )
           .addStringOption((option) =>
             option
               .setName("edited_message")
