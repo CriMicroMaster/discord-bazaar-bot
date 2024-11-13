@@ -154,6 +154,21 @@ const slashRegister = async () => {
               .setDescription("The message the bot should write.")
               .setRequired(true),
           ),
+        new SlashCommandBuilder()
+          .setName('edit')
+          .setDescription('Edit Bot Message Admin Command')
+          .addStringOption((option) =>
+            option
+              .setName("messageId")
+              .setDescription("Message Id to edit.")
+              .setRequired(true),
+          ),
+          .addStringOption((option) =>
+            option
+              .setName("edited_message")
+              .setDescription("The new message.")
+              .setRequired(true),
+          ),
       ],
     });
 
