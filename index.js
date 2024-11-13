@@ -12,7 +12,8 @@ let roleMessageId = '1306240397831442505';
 
 const roleAssignments = {
     '🛒': '1306232809215496194',
-    '📺': '1306232968888586322'
+    '📺': '1306232968888586322',
+    '<:umactually:1301946370453671979>': '1305988964104142890'
 };
 
 // Initialize the Discord client
@@ -1003,7 +1004,32 @@ client.on("ready", (c) => {
 
   // Set interval to check and update the activity every 15 minutes
   setInterval(updateActivity, 15 * 60 * 1000); // 15 minutes
+
+  sendRoleAssignmentMessage();
 });
+
+async function sendRoleAssignmentMessage() {
+    const channel = client.channels.cache.get('1306259697715777556'); // Replace with your channel ID
+    if (!channel) return console.error("Channel not found");
+
+    try {
+        const roleMessage = await channel.send(
+            "React to this message to assign yourself a role:\n\n" +
+            "🛒 - Shopping Reco\n" +
+            "📺 - Animanga Reco\n" +
+            "<:umactually:1301946370453671979> - Coding/Tech\n"
+        );
+
+        roleMessageId = roleMessage.id;
+
+        for (const emoji of Object.keys(roleAssignments)) {
+            await roleMessage.react(emoji);
+        }
+        console.log(`Role assignment message sent with ID: ${roleMessageId}`);
+    } catch (error) {
+        console.error("Failed to send role assignment message:", error);
+    }
+}
 
 client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
