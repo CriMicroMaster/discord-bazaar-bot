@@ -1001,14 +1001,13 @@ client.on("ready", (c) => {
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
+    console.log("Added");
     if (user.bot) return;
 
-    console.log("Added");
     // Only process reactions on the specific message
     if (reaction.message.id !== roleMessageId) return;
     
     const roleId = roleAssignments[reaction.emoji.name];
-    console.log("Assigned Role");
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
         await member.roles.add(roleId);
