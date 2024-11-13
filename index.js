@@ -8,6 +8,8 @@ require('dotenv').config();
 const afkChannelId = "1281677190592725032";
 const targetChannelId = '1280899273759916206';
 
+let roleMessageId = 0;
+
 const roleAssignments = {
     '🛒': '1306232809215496194',  // Replace 'ROLE_ID_1' with the actual ID of the first role
     '📺': '1306232968888586322'  // Replace 'ROLE_ID_2' with the actual ID of the second role
@@ -1002,21 +1004,31 @@ client.on("ready", (c) => {
 async function sendRoleAssignmentMessage() {
     // Send the role assignment message in a specific channel
     const channel = client.channels.cache.get('1306232193009451099'); // Replace with your channel ID
-    const roleMessage = await channel.send(
-        "React to this message to assign yourself a role:\n\n" +
-        "🛒 - Shopping Reco\n" +
-        "📺 - Animanga Reco\n" 
-    );
-    
-    // React with the emojis for each role
-    for (const emoji of Object.keys(roleAssignments)) {
-        await roleMessage.react(emoji);
+    if (!channel) return console.error("Channel not found");
+    try {
+        const roleMessage = await channel.send(
+            "React to this message to assign yourself a role:\n\n" +
+            "🛒 - Shopping Reco\n" +
+            "📺 - Animanga Reco\n"
+        );
+
+        // Store the message ID to use for filtering reactions
+        roleMessageId = roleMessage.id;
+
+        for (const emoji of Object.keys(roleAssignments)) {
+            await roleMessage.react(emoji);
+        }
+    } catch (error) {
+        console.error("Failed to send role assignment message:", error);
     }
 }
 
 client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
 
+    // Only process reactions on the specific message
+    if (reaction.message.id !== roleMessageId) return;
+    
     const roleId = roleAssignments[reaction.emoji.name];
     console.log("Assigned Role");
     if (roleId) {
@@ -1028,6 +1040,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
 client.on('messageReactionRemove', async (reaction, user) => {
     if (user.bot) return;
 
+    // Only process reactions on the specific message
+    if (reaction.message.id !== roleMessageId) return;
+    
     const roleId = roleAssignments[reaction.emoji.name];
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
