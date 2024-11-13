@@ -1022,8 +1022,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
 client.on('messageReactionRemove', async (reaction, user) => {
     if (user.bot) return;
-
-    console.log("Removed");
+    
     // Only process reactions on the specific message
     if (reaction.message.id !== roleMessageId) return;
     
@@ -1032,7 +1031,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
         const member = reaction.message.guild.members.cache.get(user.id);
         const role = reaction.message.guild.roles.cache.get(roleId);
         await member.roles.remove(roleId);
-        console.log(`Unassigned role "${role.name}" to ${user.tag}`);
+        console.log(`Unassigned role "${role.name}" from ${user.tag}`);
     }
 });
 
