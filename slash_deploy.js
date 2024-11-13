@@ -159,7 +159,7 @@ const slashRegister = async () => {
           .setDescription('Edit Bot Message Admin Command')
           .addStringOption((option) =>
             option
-              .setName("messageId")
+              .setName("message_id")
               .setDescription("Message Id to edit.")
               .setRequired(true),
           )
