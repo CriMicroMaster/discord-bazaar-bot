@@ -1014,6 +1014,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     const roleId = roleAssignments[reaction.emoji.name];
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
+        const role = reaction.message.guild.roles.cache.get(roleId);
         await member.roles.add(roleId);
         console.log(`Assigned role "${role.name}" to ${user.tag}`);
     }
@@ -1029,6 +1030,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
     const roleId = roleAssignments[reaction.emoji.name];
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
+        const role = reaction.message.guild.roles.cache.get(roleId);
         await member.roles.remove(roleId);
         console.log(`Unassigned role "${role.name}" to ${user.tag}`);
     }
