@@ -1021,7 +1021,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
         await member.roles.add(roleId);
-        console.log("Assigned Role")
+        console.log("Assigned Role");
     }
 });
 
