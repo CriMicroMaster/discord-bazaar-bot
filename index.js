@@ -996,20 +996,22 @@ client.on("ready", (c) => {
   // Set interval to check and update the activity every 15 minutes
   setInterval(updateActivity, 15 * 60 * 1000); // 15 minutes
 
-  // Send the role assignment message in a specific channel
-  const channel = client.channels.cache.get('1306232193009451099'); // Replace with your channel ID
-  const roleMessage = channel.send(
-      "React to this message to assign yourself a role:\n\n" +
-      "🛒 - Shopping Reco\n" +
-      "📺 - Animanga Reco\n" 
-  );
-
-  // React with the emojis for each role
-  for (const emoji of Object.keys(roleAssignments)) {
-      await roleMessage.react(emoji);
-  }
+  sendRoleAssignmentMessage();
 });
-
+async function sendRoleAssignmentMessage() {
+    // Send the role assignment message in a specific channel
+    const channel = client.channels.cache.get('1306232193009451099'); // Replace with your channel ID
+    const roleMessage = channel.send(
+        "React to this message to assign yourself a role:\n\n" +
+        "🛒 - Shopping Reco\n" +
+        "📺 - Animanga Reco\n" 
+    );
+    
+    // React with the emojis for each role
+    for (const emoji of Object.keys(roleAssignments)) {
+        roleMessage.react(emoji);
+    }
+}
 setInterval(async () => {
   for (const [userId, joinTime] of voiceActivity.entries()) {
     try {
