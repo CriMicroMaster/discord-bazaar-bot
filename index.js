@@ -1016,8 +1016,8 @@ client.on("ready", (c) => {
     } else {
       // Between 07:00 and 23:00
       client.user.setActivity({
-        name: "Crackolite",
-        type: ActivityType.Listening,
+        name: "Peasants",
+        type: ActivityType.Watching,
       });
     }
   };
