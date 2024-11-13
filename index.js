@@ -1008,7 +1008,6 @@ client.on("ready", (c) => {
 client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
 
-    console.log("Added");
     // Only process reactions on the specific message
     if (reaction.message.id !== roleMessageId) return;
     
@@ -1016,6 +1015,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
         await member.roles.add(roleId);
+        console.log(`Assigned role "${role.name}" to ${user.tag}`);
     }
 });
 
@@ -1030,6 +1030,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
         await member.roles.remove(roleId);
+        console.log(`Unassigned role "${role.name}" to ${user.tag}`);
     }
 });
 
