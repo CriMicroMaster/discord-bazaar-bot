@@ -233,6 +233,9 @@ client.on("interactionCreate", async (interaction) => {
         }
 
         try {
+            // Replace '\n' (newline escape character) with actual line breaks
+            newContent = newContent.replace(/\\n/g, '\n');
+            
             // Fetch the message by ID
             const messageToEdit = await interaction.channel.messages.fetch(messageId);
 
