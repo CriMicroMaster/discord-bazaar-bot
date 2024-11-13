@@ -1018,10 +1018,10 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
 
     const roleId = roleAssignments[reaction.emoji.name];
+    console.log("Assigned Role");
     if (roleId) {
         const member = reaction.message.guild.members.cache.get(user.id);
         await member.roles.add(roleId);
-        console.log("Assigned Role");
     }
 });
 
