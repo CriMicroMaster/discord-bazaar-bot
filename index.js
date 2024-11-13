@@ -1026,6 +1026,7 @@ async function sendRoleAssignmentMessage() {
 client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
 
+    console.log("Added");
     // Only process reactions on the specific message
     if (reaction.message.id !== roleMessageId) return;
     
@@ -1040,6 +1041,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 client.on('messageReactionRemove', async (reaction, user) => {
     if (user.bot) return;
 
+    console.log("Removed");
     // Only process reactions on the specific message
     if (reaction.message.id !== roleMessageId) return;
     
