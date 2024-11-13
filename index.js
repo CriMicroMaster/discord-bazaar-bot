@@ -998,6 +998,7 @@ client.on("ready", (c) => {
 
   sendRoleAssignmentMessage();
 });
+
 async function sendRoleAssignmentMessage() {
     // Send the role assignment message in a specific channel
     const channel = client.channels.cache.get('1306232193009451099'); // Replace with your channel ID
@@ -1012,6 +1013,29 @@ async function sendRoleAssignmentMessage() {
         await roleMessage.react(emoji);
     }
 }
+
+client.on('messageReactionAdd', async (reaction, user) => {
+    if (user.bot) return;
+
+    const roleId = roleAssignments[reaction.emoji.name];
+    if (roleId) {
+        const member = reaction.message.guild.members.cache.get(user.id);
+        await member.roles.add(roleId);
+        user.send(`You have been assigned the role!`).catch(console.error);
+    }
+});
+
+client.on('messageReactionRemove', async (reaction, user) => {
+    if (user.bot) return;
+
+    const roleId = roleAssignments[reaction.emoji.name];
+    if (roleId) {
+        const member = reaction.message.guild.members.cache.get(user.id);
+        await member.roles.remove(roleId);
+        user.send(`The role has been removed.`).catch(console.error);
+    }
+});
+
 setInterval(async () => {
   for (const [userId, joinTime] of voiceActivity.entries()) {
     try {
