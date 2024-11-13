@@ -241,10 +241,8 @@ client.on("interactionCreate", async (interaction) => {
 
             // Edit the message with the new content
             await messageToEdit.edit(newContent);
-            interaction.reply(`Successfully edited the message with ID: ${messageId}`);
         } catch (error) {
             console.error('Error editing message:', error);
-            interaction.reply('Failed to edit the message. Make sure the message ID is correct and the bot has permission to manage messages.');
      }
   }
     
