@@ -1028,21 +1028,29 @@ client.on("ready", (c) => {
   // Set interval to check and update the activity every 15 minutes
   setInterval(updateActivity, 15 * 60 * 1000); // 15 minutes
 
-  const channel = await client.channels.fetch('1306259697715777556');
-  const roleMessage = await channel.messages.fetch(roleMessageId);
-
-  // Loop through each emoji in roleAssignments and add it as a reaction if missing
-  for (const emoji of Object.keys(roleAssignments)) {
-      if (!roleMessage.reactions.cache.has(emoji)) {
-          try {
-              await roleMessage.react(emoji);
-              console.log(`Added reaction: ${emoji}`);
-          } catch (error) {
-              console.error(`Failed to add reaction ${emoji}:`, error);
-          }
-      }
-  }
+  addReactionsToMessage()
 });
+
+async function addReactionsToMessage() {
+  try {
+    const channel = await client.channels.fetch('1306259697715777556');
+    const roleMessage = await channel.messages.fetch(roleMessageId);
+
+    // Loop through each emoji in roleAssignments and add it as a reaction if missing
+    for (const emoji of Object.keys(roleAssignments)) {
+      if (!roleMessage.reactions.cache.has(emoji)) {
+        try {
+          await roleMessage.react(emoji);
+          console.log(`Added reaction: ${emoji}`);
+        } catch (error) {
+          console.error(`Failed to add reaction ${emoji}:`, error);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching channel or message:', error);
+  }
+}
 
 client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
