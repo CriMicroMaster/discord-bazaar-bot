@@ -8,7 +8,7 @@ require('dotenv').config();
 const afkChannelId = '1281677190592725032';
 const targetChannelId = '1280899273759916206';
 
-let roleMessageId = '1306261565116387382';
+let channelRoleMessageId = '1306261565116387382';
 
 const roleAssignments = {
     '🛒': '1306232809215496194',
@@ -1035,7 +1035,7 @@ client.on("ready", (c) => {
 async function addReactionsToMessage() {
   try {
     const channel = await client.channels.fetch('1306259697715777556');
-    const roleMessage = await channel.messages.fetch(roleMessageId);
+    const roleMessage = await channel.messages.fetch(channelRoleMessageId);
 
     // Loop through each emoji in roleAssignments and add it as a reaction if missing
     for (const emoji of Object.keys(roleAssignments)) {
@@ -1058,7 +1058,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
 
     // Only process reactions on the specific message
-    if (reaction.message.id !== roleMessageId) return;
+    if (reaction.message.id !== channelRoleMessageId) return;
     
     const roleId = roleAssignments[reaction.emoji.name] || roleAssignments[`<:${reaction.emoji.name}:${reaction.emoji.id}>`];
     if (roleId) {
@@ -1080,7 +1080,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
     if (user.bot) return;
     
     // Only process reactions on the specific message
-    if (reaction.message.id !== roleMessageId) return;
+    if (reaction.message.id !== channelRoleMessageId) return;
     
     const roleId = roleAssignments[reaction.emoji.name] || roleAssignments[`<:${reaction.emoji.name}:${reaction.emoji.id}>`];
     if (roleId) {
