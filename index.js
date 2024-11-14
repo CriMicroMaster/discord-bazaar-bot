@@ -1032,25 +1032,41 @@ client.on("ready", (c) => {
 });
 
 async function addReactionsToMessage() {
-  try {
-    const channel = await client.channels.fetch('1306259697715777556');
-    const roleMessage = await channel.messages.fetch(roleMessageId);
+    try {
+        const channel = await client.channels.fetch('1306259697715777556'); 
+        const roleMessage = await channel.messages.fetch(roleMessageId);
 
-    // Loop through each emoji in roleAssignments and add it as a reaction if missing
-    for (const emoji of Object.keys(roleAssignments)) {
-      if (!roleMessage.reactions.cache.has(emoji)) {
-        try {
-          await roleMessage.react(emoji);
-          console.log(`Added reaction: ${emoji}`);
-        } catch (error) {
-          console.error(`Failed to add reaction ${emoji}:`, error);
+        // Get the existing reactions on the message
+        const existingReactions = roleMessage.reactions.cache;
+
+        // Remove any reactions that are not in roleAssignments
+        for (const reaction of existingReactions.values()) {
+            if (!roleAssignments.hasOwnProperty(reaction.emoji.name)) {
+                try {
+                    await reaction.remove();
+                    console.log(`Removed reaction: ${reaction.emoji.name}`);
+                } catch (error) {
+                    console.error(`Failed to remove reaction ${reaction.emoji.name}:`, error);
+                }
+            }
         }
-      }
+
+        // Add reactions that are in roleAssignments but not yet on the message
+        for (const emoji of Object.keys(roleAssignments)) {
+            if (!existingReactions.has(emoji)) {
+                try {
+                    await roleMessage.react(emoji);
+                    console.log(`Added reaction: ${emoji}`);
+                } catch (error) {
+                    console.error(`Failed to add reaction ${emoji}:`, error);
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching channel or message:', error);
     }
-  } catch (error) {
-    console.error('Error fetching channel or message:', error);
-  }
 }
+
 
 client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return;
