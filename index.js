@@ -890,7 +890,8 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
       voiceActivity.set(userId, Date.now());
 
       const user = newState.member.user; // Get the user object from the newState
-      console.log(`${user.username} joined a channel.`);
+      const currentTime = new Date().toLocaleTimeString();
+      console.log(`[${currentTime}] ${user.username} joined a channel.`);
     } else {
       voiceActivity.delete(userId);
     }
@@ -940,7 +941,8 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
       voiceActivity.set(userId, Date.now());
 
       const user = newState.member.user; // Get the user object from the newState
-      console.log(`${user.username} switched to another channel.`);
+      const currentTime = new Date().toLocaleTimeString();
+      console.log(`[${currentTime}] ${user.username} switched to another channel.`);
     } else {
       voiceActivity.delete(userId);
     }
@@ -967,7 +969,8 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     voiceActivity.delete(userId); // Remove the user from the map
     
     const user = oldState.member.user; // Get the user object from the oldState
-    console.log(`${user.username} left a channel.`);
+    const currentTime = new Date().toLocaleTimeString();
+    console.log(`[${currentTime}] ${user.username} left a channel.`);
   }
 });
 
