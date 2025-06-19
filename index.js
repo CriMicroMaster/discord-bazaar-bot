@@ -149,6 +149,25 @@ async function syncDatabase() {
 }
 syncDatabase();
 
+async function updateMemberCountChannel(guild) {
+  const channelId = '1385205185491505163';
+  const CHANNEL_NAME_PREFIX = "Members: ";
+
+  try {
+    const channel = await guild.channels.fetch(channelId);
+    if (!channel || channel.type !== 0) return; // Ensure it's a text channel
+
+    const newName = CHANNEL_NAME_PREFIX + guild.memberCount;
+    if (channel.name !== newName) {
+      await channel.setName(newName);
+      console.log(`Updated member count channel to "${newName}"`);
+    }
+  } catch (err) {
+    console.error("Failed to update member count channel:", err);
+  }
+}
+
+
 // Function to check and create wallets for all users in the server
 async function checkWallets(guild) {
   try {
@@ -981,12 +1000,21 @@ client.on("messageCreate", async (message) => {
   const { leveledUp, level, xp } = await addXP(message.author.id, xpAmount);
 });
 
+client.on("guildMemberAdd", member => {
+  updateMemberCountChannel(member.guild);
+});
+
+client.on("guildMemberRemove", member => {
+  updateMemberCountChannel(member.guild);
+});
+
 client.on("ready", (c) => {
   console.log(`${c.user.tag} is online.`);
 
   const guild = client.guilds.cache.get('1278098250330537994');
   if (guild) {
     checkWallets(guild); // Check wallets when the bot starts
+    updateMemberCountChannel(guild);
   } else {
     console.error('Guild not found.');
   }
