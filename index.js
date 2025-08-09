@@ -282,23 +282,17 @@ client.on("interactionCreate", async (interaction) => {
       await interaction.deferReply({ ephemeral: false });
     
       try {
-        const reply = await shapesChat(prompt);
+        // 1) echo the user input
+        await interaction.followUp(`User said: ${prompt}`);
     
-        const embed = new EmbedBuilder()
-          .setTitle("Bazaar")
-          .addFields(
-            { name: "User said", value: prompt.slice(0, 1024) || "—" },
-            { name: "Bazaar replied", value: reply.slice(0, 1024) || "…" }
-          )
-          .setColor(0x5865F2)
-          .setFooter({ text: `Requested by ${interaction.user.username}` })
-          .setTimestamp();
-    
-        await interaction.followUp({ embeds: [embed] });
+        // 2) get Bazaar's answer and send as plain text
+        const reply = await shapesChatWithHistory(interaction.user.id, prompt);
+        await interaction.followUp(reply || "…");
       } catch (err) {
         await interaction.followUp(`Error talking to Bazaar: ${err.message}`);
       }
     }
+
 
   if (interaction.commandName === 'edit') {
         const messageId = interaction.options.getString('message_id');
