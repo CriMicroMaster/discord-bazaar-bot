@@ -280,9 +280,21 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "talk") {
       const prompt = interaction.options.getString("prompt", true);
       await interaction.deferReply({ ephemeral: false });
+    
       try {
         const reply = await shapesChat(prompt);
-        await interaction.followUp(reply || "…");
+    
+        const embed = new EmbedBuilder()
+          .setTitle("Bazaar")
+          .addFields(
+            { name: "User said", value: prompt.slice(0, 1024) || "—" },
+            { name: "Bazaar replied", value: reply.slice(0, 1024) || "…" }
+          )
+          .setColor(0x5865F2)
+          .setFooter({ text: `Requested by ${interaction.user.username}` })
+          .setTimestamp();
+    
+        await interaction.followUp({ embeds: [embed] });
       } catch (err) {
         await interaction.followUp(`Error talking to Bazaar: ${err.message}`);
       }
