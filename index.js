@@ -5,6 +5,9 @@ const keep_alive = require("./keep_alive.js");
 
 require('dotenv').config();
 
+const SHAPES_API_KEY = process.env.SHAPES_API_KEY;
+const SHAPES_MODEL = process.env.SHAPES_MODEL || "shapesinc/bazaar";
+
 const afkChannelId = '1281677190592725032';
 const targetChannelId = '1280899273759916206';
 
@@ -53,6 +56,27 @@ async function addXP(userId, amount) {
   await wallet.save();
 
   return { leveledUp, level: wallet.level, xp: wallet.xp };
+}
+
+async function shapesChat(prompt) {
+  const res = await fetch("https://api.shapes.inc/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${SHAPES_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: SHAPES_MODEL,
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    const msg = data?.error?.message || JSON.stringify(data);
+    throw new Error(`Shapes error: ${msg}`);
+  }
+  return data.choices?.[0]?.message?.content ?? "";
 }
 
 function getRandomCard() {
