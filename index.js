@@ -282,16 +282,34 @@ client.on("interactionCreate", async (interaction) => {
       await interaction.deferReply({ ephemeral: false });
     
       try {
-        // 1) echo the user input
+        // First message: echo what the user said
         await interaction.followUp(`User said: ${prompt}`);
     
-        // 2) get Bazaar's answer and send as plain text
-        const reply = await shapesChatWithHistory(interaction.user.id, prompt);
-        await interaction.followUp(reply || "…");
+        // Second message: Bazaar's reply from Shapes Inc
+        const res = await fetch("https://api.shapes.inc/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${process.env.SHAPES_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: process.env.SHAPES_MODEL || "shapesinc/bazaar",
+            messages: [{ role: "user", content: prompt }],
+          }),
+        });
+    
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data?.error?.message || JSON.stringify(data));
+        }
+    
+        const reply = data.choices?.[0]?.message?.content || "…";
+        await interaction.followUp(reply);
       } catch (err) {
         await interaction.followUp(`Error talking to Bazaar: ${err.message}`);
       }
     }
+
 
 
   if (interaction.commandName === 'edit') {
