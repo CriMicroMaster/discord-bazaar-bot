@@ -277,6 +277,17 @@ client.on("interactionCreate", async (interaction) => {
     });
   }
 
+  if (interaction.commandName === "talk") {
+      const prompt = interaction.options.getString("prompt", true);
+      await interaction.deferReply({ ephemeral: false });
+      try {
+        const reply = await shapesChat(prompt);
+        await interaction.followUp(reply || "…");
+      } catch (err) {
+        await interaction.followUp(`Error talking to Bazaar: ${err.message}`);
+      }
+    }
+
   if (interaction.commandName === 'edit') {
         const messageId = interaction.options.getString('message_id');
         let newContent = interaction.options.getString('edited_message');
