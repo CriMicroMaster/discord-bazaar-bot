@@ -169,6 +169,15 @@ const slashRegister = async () => {
               .setDescription("The new message.")
               .setRequired(true),
           ),
+        new SlashCommandBuilder()
+          .setName("talk")
+          .setDescription("Talk to Bazaar and get a reply")
+          .addStringOption((option) =>
+            option
+              .setName("prompt")
+              .setDescription("What you want to say to Bazaar")
+              .setRequired(true)
+          ),
       ],
     });
 
